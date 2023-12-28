@@ -121,7 +121,7 @@ export default function Home() {
         <div className="h-screen overflow-hidden">
             <header className="bg-black p-4 sticky top-0 left-0 z-40">
                 <h4 className="font-bold">YT Mixer</h4>
-                <span>Creado por <a href="https://github.com/manusaavedra">Manuel Saavedra</a></span>
+                <span className="text-xs">Creado por <a href="https://github.com/manusaavedra">Manuel Saavedra</a></span>
             </header>
             <main className="flex justify-between gap-2">
                 <aside className="bg-black h-[calc(100vh-60px)] overflow-auto min-w-[320px] max-w-[320px] py-6 px-2">
