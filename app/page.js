@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react"
 import YouTube from 'react-youtube';
+import useInput from "./hooks/input";
 
 export default function Home() {
     const [videos, setVideos] = useState([])
     const [favorites, setFavorites] = useState([])
+    const searchInput = useInput()
     const [playlist, setPlaylist] = useState({
         firstPlayer: {},
         secondPlayer: {}
@@ -21,6 +23,25 @@ export default function Home() {
         if (localFavorites) {
             setFavorites(JSON.parse(localFavorites))
         }
+
+        const fetchHome = async () => {
+            const url = 'https://www.googleapis.com/youtube/v3/search'
+
+            const params = new URLSearchParams()
+            params.append('key', 'AIzaSyBY_wlzNvv-tzjiJ4GawGMHo2Ei6hC4DY0')
+            params.append('type', 'video')
+            params.append('part', 'snippet')
+            params.append('maxResults', 20)
+            params.append('q', "")
+
+            const request = await fetch(`${url}?${params.toString()}`)
+            const data = await request.json()
+
+            setVideos(data.items)
+        }
+
+        fetchHome()
+
     }, [])
 
     const handleSubmit = async (e) => {
@@ -87,10 +108,7 @@ export default function Home() {
         })
     }
 
-
-
     const onReadySecondPlayer = (eventPlayer) => {
-
         if (inputTransitionRef.current.value <= 0.15) {
             eventPlayer.target.pauseVideo()
         } else {
@@ -116,6 +134,11 @@ export default function Home() {
         })
     }
 
+    const filterFavorites = (text) => {
+        return favorites.filter((video) => {
+            return String(video.snippet.title).toLowerCase().includes(String(text).toLowerCase())
+        })
+    }
 
     return (
         <div className="h-screen overflow-hidden">
@@ -127,7 +150,7 @@ export default function Home() {
                 <aside className="bg-black h-[calc(100vh-60px)] overflow-auto min-w-[260px] max-w-[260px] py-6 px-2">
                     <h4 className="font-semibold mb-6">Favoritos</h4>
                     <div className="my-4">
-                        <input className="w-full" type="text" placeholder="Buscar favorito" />
+                        <input className="w-full" onChange={searchInput.onChange} value={searchInput.value} type="text" placeholder="Buscar favorito" />
                     </div>
                     <ul>
                         {
@@ -136,7 +159,7 @@ export default function Home() {
                             )
                         }
                         {
-                            favorites.map((fav) => (
+                            filterFavorites(searchInput.value).map((fav) => (
                                 <li className="border-b" key={fav.id.videoId}>
                                     <picture>
                                         <img src={fav.snippet.thumbnails.medium.url} alt={fav.snippet.title} />
@@ -163,8 +186,8 @@ export default function Home() {
                         }
                     </ul>
                 </aside>
-                <div className="max-w-7xl">
-                    <div className="sticky top-[50px] left-0 border-b border-black w-full bg-gray-900 z-30">
+                <div className="w-full">
+                    <div className="max-w-7xl mx-auto sticky top-[50px] left-0 border-b border-black w-full bg-gray-900 bg-opacity-40 z-30">
                         <div className="py-4 flex max-h-[400px] p-4 justify-between">
                             <div className="w-full min-w-[400px] max-w-[400px] aspect-video border-2 border-red-500 overflow-hidden">
                                 {
@@ -184,8 +207,8 @@ export default function Home() {
                             </div>
                             <div className="pt-4">
                                 <div className="relative flex mt-8 h-[50%]">
-                                    <input className="vertical" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
-                                    <input className="vertical" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
+                                    <input className="vertical red" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
+                                    <input className="vertical blue" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
                                 </div>
                                 <div className="flex gap-2 pt-12 px-4 items-center">
                                     <input ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
@@ -213,7 +236,7 @@ export default function Home() {
                             </div>
                         </form>
                     </div>
-                    <div className="max-w-7xl mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
+                    <div className="w-full mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
                         {videos.length !== 0 && <h4 className="font-bold text-base my-4">Resultados:</h4>}
                         <div className="flex flex-wrap gap-4">
                             {

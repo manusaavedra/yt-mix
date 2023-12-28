@@ -42,7 +42,7 @@
 
 
 body {
-  @apply bg-gray-900 text-white
+  @apply bg-gray-950 text-white
 }
 
 input[type="text"] {
@@ -84,9 +84,17 @@ input[type=range]::-webkit-slider-runnable-track {
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 1px 1px 1px #000000;
-  background: #000000;
+  background: #000;
   border-radius: 5px;
   border: 1px solid #000000;
+}
+
+input[type=range].red::-webkit-slider-runnable-track {
+  background: #ff8181;
+}
+
+input[type=range].blue::-webkit-slider-runnable-track {
+  background: #817eff;
 }
 
 input[type=range]::-webkit-slider-thumb {
@@ -95,14 +103,11 @@ input[type=range]::-webkit-slider-thumb {
   height: 30px;
   width: 24px;
   border-radius: 5px;
-  background: #9f9f9f;
+  background: rgb(161, 161, 161);
+  background: linear-gradient(90deg, rgba(161, 161, 161, 1) 28%, rgba(99, 99, 99, 1) 44%, rgba(0, 0, 0, 1) 44%, rgba(13, 13, 13, 1) 57%, rgba(90, 90, 90, 1) 57%, rgba(161, 161, 161, 1) 83%);
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -13px;
-}
-
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #000000;
 }
 
 input[type=range]::-moz-range-track {
@@ -156,7 +161,9 @@ input[type=range]::-ms-thumb {
   height: 30px;
   width: 24px;
   border-radius: 5px;
-  background: #9f9f9f;
+  border-radius: 5px;
+  background: rgb(161, 161, 161);
+  background: linear-gradient(90deg, rgba(161, 161, 161, 1) 28%, rgba(99, 99, 99, 1) 44%, rgba(0, 0, 0, 1) 44%, rgba(13, 13, 13, 1) 57%, rgba(90, 90, 90, 1) 57%, rgba(161, 161, 161, 1) 83%);
   cursor: pointer;
 }
 
