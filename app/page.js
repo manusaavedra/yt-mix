@@ -123,9 +123,12 @@ export default function Home() {
                 <h4 className="font-bold">YT Mixer</h4>
                 <span className="text-xs">Creado por <a className="underline" href="https://github.com/manusaavedra">Manuel Saavedra</a></span>
             </header>
-            <main className="flex justify-between gap-2">
-                <aside className="bg-black h-[calc(100vh-60px)] overflow-auto min-w-[320px] max-w-[320px] py-6 px-2">
+            <main className="flex gap-2">
+                <aside className="bg-black h-[calc(100vh-60px)] overflow-auto min-w-[260px] max-w-[260px] py-6 px-2">
                     <h4 className="font-semibold mb-6">Favoritos</h4>
+                    <div className="my-4">
+                        <input className="w-full" type="text" placeholder="Buscar favorito" />
+                    </div>
                     <ul>
                         {
                             favorites.length === 0 && (
@@ -160,44 +163,57 @@ export default function Home() {
                         }
                     </ul>
                 </aside>
-                <div className="max-w-4xl mx-auto">
+                <div className="max-w-7xl">
                     <div className="sticky top-[50px] left-0 border-b border-black w-full bg-gray-900 z-30">
                         <div className="py-4 flex max-h-[400px] p-4 justify-between">
-                            <div className="w-full max-w-[320px] h-[180px] border-2 border-red-500 overflow-hidden">
-                                <YouTube
-                                    videoId={playlist.firstPlayer?.id || ''}
-                                    onReady={onReadyFirstPlayer}
-                                    className="w-full"
-                                    opts={
-                                        { width: 320, height: 180 }
-                                    } />
+                            <div className="w-full min-w-[400px] max-w-[400px] aspect-video border-2 border-red-500 overflow-hidden">
+                                {
+                                    playlist.firstPlayer?.id && (
+                                        <YouTube
+                                            videoId={playlist.firstPlayer.id || ''}
+                                            onReady={onReadyFirstPlayer}
+                                            className="w-full aspect-video"
+                                            opts={{
+                                                width: 400,
+                                                height: 225
+                                            }}
+                                        />
+                                    )
+                                }
+
                             </div>
-                            <div>
-                                <div className="flex h-[70%]">
-                                    <input className="rotate-[-90deg] accent-red-500 origin-center" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
-                                    <input className="rotate-[-90deg] accent-blue-500 origin-center" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
+                            <div className="pt-4">
+                                <div className="relative flex mt-8 h-[50%]">
+                                    <input className="vertical" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
+                                    <input className="vertical" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
                                 </div>
-                                <div className="flex gap-2 pt-2 px-4 items-center h-[25%]">
-                                    <input className="w-full" ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
+                                <div className="flex gap-2 pt-12 px-4 items-center">
+                                    <input className="border" ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
                                 </div>
                             </div>
-                            <div className="w-full max-w-[320px] h-[180px] border-2 border-blue-500 overflow-hidden">
-                                <YouTube
-                                    videoId={playlist.secondPlayer?.id || ''}
-                                    onReady={onReadySecondPlayer}
-                                    className="w-full"
-                                    opts={
-                                        { width: 320, height: 180 }
-                                    } />
+                            <div className="w-full min-w-[400px] max-w-[400px] aspect-video border-2 border-blue-500 overflow-hidden">
+                                {
+                                    playlist.secondPlayer?.id && (
+                                        <YouTube
+                                            videoId={playlist.secondPlayer?.id || ''}
+                                            onReady={onReadySecondPlayer}
+                                            className="w-full"
+                                            opts={{
+                                                width: 400,
+                                                height: 225
+                                            }}
+                                        />
+                                    )
+                                }
                             </div>
                         </div>
-                        <form className="max-w-4xl mx-auto p-4" onSubmit={handleSubmit}>
+                        <form className="max-w-4xl p-4" onSubmit={handleSubmit}>
                             <div>
                                 <input className="w-full" type="text" name="search" placeholder="Buscar en youtube..." />
                             </div>
                         </form>
                     </div>
-                    <div className="max-w-4xl mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
+                    <div className="max-w-7xl mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
                         {videos.length !== 0 && <h4 className="font-bold text-base my-4">Resultados:</h4>}
                         <div className="flex flex-wrap gap-4">
                             {
