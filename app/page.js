@@ -188,7 +188,7 @@ export default function Home() {
                                     <input className="vertical" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
                                 </div>
                                 <div className="flex gap-2 pt-12 px-4 items-center">
-                                    <input className="border" ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
+                                    <input ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
                                 </div>
                             </div>
                             <div className="w-full min-w-[400px] max-w-[400px] aspect-video border-2 border-blue-500 overflow-hidden">
