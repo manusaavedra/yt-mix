@@ -147,9 +147,9 @@ export default function Home() {
                 <span className="text-xs">Creado por <a className="underline" href="https://github.com/manusaavedra">Manuel Saavedra</a></span>
             </header>
             <main className="flex gap-2">
-                <aside className="bg-black h-[calc(100vh-60px)] overflow-auto min-w-[260px] max-w-[260px] py-6 px-2">
-                    <h4 className="font-semibold mb-6">Favoritos</h4>
-                    <div className="my-4">
+                <aside className="bg-black h-[calc(100vh-60px)] overflow-auto min-w-[260px] max-w-[260px] px-2">
+                    <div className="sticky top-0 bg-black mb-4 left-0 pt-4 pb-2">
+                        <h4 className="font-semibold mb-2">Favoritos</h4>
                         <input className="w-full" onChange={searchInput.onChange} value={searchInput.value} type="text" placeholder="Buscar favorito" />
                     </div>
                     <ul>
