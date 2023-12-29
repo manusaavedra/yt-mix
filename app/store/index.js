@@ -27,7 +27,7 @@ export function useVideos() {
 
     const { data } = useQuery({
         queryKey: ['videos'],
-        queryFn: async () => { },//await fetchVideos(),
+        queryFn: async () => await fetchVideos(),
         initialData: [],
         refetchOnWindowFocus: false
     })
