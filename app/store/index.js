@@ -36,13 +36,12 @@ export function useVideos() {
         useStoreVideos.setState({ videos: data || [] })
     }, [data])
 
-    const toPlaylist = (video, where) => {
-        useStoreVideos.setState((state) => ({
-            playlist: {
-                ...state.playlist,
-                [where]: video
-            }
-        }))
+    const toFirstPlayer = (video) => {
+        useStoreVideos.setState({ firstPlayer: video })
+    }
+
+    const toSecondPlayer = (video) => {
+        useStoreVideos.setState({ secondPlayer: video })
     }
 
     const searchVideos = async (value) => {
@@ -50,7 +49,13 @@ export function useVideos() {
         useStoreVideos.setState({ videos: data })
     }
 
-    return { videos, fetchVideos, toPlaylist, searchVideos }
+    return {
+        videos,
+        fetchVideos,
+        toFirstPlayer,
+        toSecondPlayer,
+        searchVideos
+    }
 }
 
 export function useFavorites() {
@@ -83,10 +88,8 @@ export function useFavorites() {
 export const useStoreVideos = create((set, get) => ({
     videos: [],
     favorites: [],
-    playlist: {
-        firstPlayer: null,
-        secondPlayer: null
-    },
+    firstPlayer: null,
+    secondPlayer: null,
     fetchFavorites: () => {
         const localFavorites = localStorage.getItem('favorites_songs')
         if (localFavorites) {

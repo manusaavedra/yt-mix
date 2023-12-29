@@ -3,7 +3,7 @@ import { useStoreVideos } from "../store";
 import { useRef } from "react";
 
 export default function Controls() {
-    const { playlist } = useStoreVideos()
+    const { firstPlayer, secondPlayer } = useStoreVideos()
 
     const inputVolFirstPlayerRef = useRef()
     const inputVolSecondPlayerRef = useRef()
@@ -72,18 +72,18 @@ export default function Controls() {
 
     return (
         <div className="sticky top-[50px] left-0 border-b border-black w-full bg-gray-900 bg-opacity-40 z-30">
-            <div className="py-4 grid grid-cols-[400px_200px_400px] justify-center max-h-[400px] p-4">
-                <div className="w-full min-w-[400px] max-w-[400px] aspect-video border-2 border-red-500 overflow-hidden">
+            <div className="py-4 grid grid-cols-[minmax(280px,380px)_200px_minmax(280px,360px)] justify-center max-h-[400px] p-4">
+                <div className="w-full aspect-video border-2 border-red-500 overflow-hidden">
                     {
-                        playlist.firstPlayer !== null && (
+                        firstPlayer !== null && (
                             <YouTube
-                                videoId={playlist.firstPlayer?.id || ''}
-                                title={playlist.firstPlayer?.title}
+                                videoId={firstPlayer?.id || ''}
+                                title={firstPlayer?.title}
                                 onReady={onReadyFirstPlayer}
-                                className="w-full aspect-video"
+                                className="h-full aspect-video"
                                 opts={{
-                                    width: 400,
-                                    height: 225
+                                    width: 380,
+                                    height: 213
                                 }}
                             />
                         )
@@ -91,25 +91,29 @@ export default function Controls() {
 
                 </div>
                 <div className="pt-4">
-                    <div className="relative flex mt-8 h-[50%]">
+                    <div className="relative flex mt-8 h-[25%]">
                         <input className="vertical red" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
                         <input className="vertical blue" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
                     </div>
-                    <div className="flex gap-2 pt-12 px-4 items-center">
+                    <div className="w-[90%] mx-auto mt-10 p-2">
                         <input ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
+                        <div className="grid grid-cols-2 text-center">
+                            <div className="bg-red-500 bg-opacity-50">1</div>
+                            <div className="bg-blue-500 bg-opacity-50">2</div>
+                        </div>
                     </div>
                 </div>
-                <div className="w-full min-w-[400px] max-w-[400px] aspect-video border-2 border-blue-500 overflow-hidden">
+                <div className="w-full aspect-video border-2 border-blue-500 overflow-hidden">
                     {
-                        playlist.secondPlayer !== null && (
+                        secondPlayer !== null && (
                             <YouTube
-                                videoId={playlist.secondPlayer?.id || ''}
-                                title={playlist.secondPlayer?.title}
+                                videoId={secondPlayer?.id || ''}
+                                title={secondPlayer?.title}
                                 onReady={onReadySecondPlayer}
-                                className="w-full"
+                                className="h-full aspect-video"
                                 opts={{
-                                    width: 400,
-                                    height: 225
+                                    width: 380,
+                                    height: 213
                                 }}
                             />
                         )

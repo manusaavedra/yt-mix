@@ -5,15 +5,26 @@ import Header from "./components/Header";
 import AsideBar from "./components/AsideBar";
 import Controls from "./components/Controls";
 import VideoItem from "./components/VideoItem";
+import useMobile from "./hooks/useMobile";
 
 export default function Home() {
-    const { videos, toPlaylist, searchVideos } = useVideos()
+    const { isMobile } = useMobile()
+    const { videos, toFirstPlayer, toSecondPlayer, searchVideos } = useVideos()
     const { toFavorites } = useFavorites()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         const { search } = Object.fromEntries(new FormData(e.target))
         searchVideos(search)
+    }
+
+    if (isMobile) {
+        return (
+            <div className="grid place-items-center h-screen p-4">
+                <p>Lo sentimos, <b>Ytmix</b> aún no esta adaptado para móviles.
+                    Usa un ordenador para poder usar Ytmix</p>
+            </div>
+        )
     }
 
     return (
@@ -23,14 +34,14 @@ export default function Home() {
                 <AsideBar />
                 <div className="w-full">
                     <Controls />
-                    <form className="max-w-4xl mx-auto p-4" onSubmit={handleSubmit}>
+                    <form className="w-full max-w-4xl p-4" onSubmit={handleSubmit}>
                         <div>
                             <input className="w-full" type="text" name="search" placeholder="Buscar en youtube..." />
                         </div>
                     </form>
-                    <div className="max-w-7xl mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
+                    <div className="w-full mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
                         {videos?.length !== 0 && <h4 className="font-bold text-base my-4">Resultados:</h4>}
-                        <div className="grid grid-cols-[repeat(5,200px)] gap-4 justify-center">
+                        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] place-content-center gap-4">
                             {
                                 videos.map((video) => (
                                     <VideoItem
@@ -38,14 +49,14 @@ export default function Home() {
                                         imageUrl={video.snippet.thumbnails.medium.url}
                                         title={video.snippet.title}
                                         onFavorite={() => toFavorites(video)}
-                                        onAddToFirstPlayer={() => toPlaylist({
+                                        onAddToFirstPlayer={() => toFirstPlayer({
                                             id: video.id.videoId,
                                             title: video.snippet.title,
-                                        }, 'firstPlayer')}
-                                        onAddToSecondPlayer={() => toPlaylist({
+                                        })}
+                                        onAddToSecondPlayer={() => toSecondPlayer({
                                             id: video.id.videoId,
                                             title: video.snippet.title,
-                                        }, 'secondPlayer')}
+                                        })}
                                     />
                                 ))
                             }
