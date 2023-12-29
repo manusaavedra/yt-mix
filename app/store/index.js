@@ -26,6 +26,7 @@ export function useVideos() {
         queryKey: ['videos'],
         queryFn: async () => await fetchVideos(),
         initialData: [],
+        refetchOnWindowFocus: false
     })
 
     useEffect(() => {
