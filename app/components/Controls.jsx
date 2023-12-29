@@ -71,8 +71,8 @@ export default function Controls() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto sticky top-[50px] left-0 border-b border-black w-full bg-gray-900 bg-opacity-40 z-30">
-            <div className="py-4 flex max-h-[400px] p-4 justify-between">
+        <div className="sticky top-[50px] left-0 border-b border-black w-full bg-gray-900 bg-opacity-40 z-30">
+            <div className="py-4 grid grid-cols-[400px_200px_400px] justify-center max-h-[400px] p-4">
                 <div className="w-full min-w-[400px] max-w-[400px] aspect-video border-2 border-red-500 overflow-hidden">
                     {
                         playlist.firstPlayer !== null && (

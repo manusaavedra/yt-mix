@@ -1,8 +1,6 @@
 "use client"
 
-import { useRef } from "react"
-import YouTube from 'react-youtube';
-import { useFavorites, useStoreVideos, useVideos } from "./store";
+import { useFavorites, useVideos } from "./store";
 import Header from "./components/Header";
 import AsideBar from "./components/AsideBar";
 import Controls from "./components/Controls";
@@ -29,9 +27,9 @@ export default function Home() {
                             <input className="w-full" type="text" name="search" placeholder="Buscar en youtube..." />
                         </div>
                     </form>
-                    <div className="w-full mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
+                    <div className="max-w-7xl mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
                         {videos?.length !== 0 && <h4 className="font-bold text-base my-4">Resultados:</h4>}
-                        <div className="flex flex-wrap gap-4">
+                        <div className="grid grid-cols-[repeat(5,200px)] gap-4 justify-center">
                             {
                                 videos.map((video) => (
                                     <div className="relative group overflow-hidden bg-black bg-opacity-30 border max-w-[200px] w-full rounded-md p-2" key={video.id.videoId}>

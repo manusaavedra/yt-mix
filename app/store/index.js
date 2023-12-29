@@ -1,22 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { create } from "zustand";
-import useInput from "../hooks/input";
 
 async function fetchVideos(searchText = "") {
     const url = 'https://www.googleapis.com/youtube/v3/search'
 
     const params = new URLSearchParams()
-    params.append('key', 'AIzaSyDyZySgu10trrXXLNNvuzCbFXJCo5a7qV4')
+    params.append('key', 'AIzaSyCCP5lU5NjOz3JISOMxRsG_1WtV9h6nDhw')
     params.append('type', 'video')
     params.append('part', 'snippet')
-    params.append('maxResults', 20)
+    params.append('maxResults', 12)
     params.append('q', searchText)
 
     const request = await fetch(`${url}?${params.toString()}`)
     const data = await request.json()
 
-    return data.items
+    if (request.ok) {
+        return data.items
+    }
+
+    return []
 }
 
 export function useVideos() {
