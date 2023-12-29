@@ -45,6 +45,11 @@ body {
   @apply bg-gray-950 text-white
 }
 
+.controls {
+  background: rgb(3, 7, 18);
+  background: linear-gradient(0deg, rgba(3, 7, 18, 1) 18%, rgb(45, 2, 30) 100%);
+}
+
 input[type="text"] {
   @apply border p-2 outline-none rounded-md bg-black bg-opacity-30
 }

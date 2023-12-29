@@ -110,9 +110,9 @@ export default function Controls() {
     }
 
     return (
-        <div className="sticky top-[50px] left-0 border-b border-black w-full bg-gray-900 bg-opacity-40 z-30">
+        <div className="sticky top-[50px] left-0 border-b border-black w-full controls z-30">
             <div className="py-4 grid grid-cols-[minmax(280px,380px)_200px_minmax(280px,360px)] justify-center max-h-[400px] p-4">
-                <div className="w-full aspect-video border-2 border-red-500 overflow-hidden">
+                <div className="w-full aspect-video border-2 border-red-500 bg-black bg-opacity-40 overflow-hidden">
                     {
                         firstPlayer !== null && (
                             <YouTube
@@ -137,12 +137,12 @@ export default function Controls() {
                     <div className="w-[90%] mx-auto mt-10 p-2">
                         <input ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
                         <div className="grid grid-cols-2 text-center">
-                            <div className="bg-red-500 bg-opacity-50">1</div>
-                            <div className="bg-blue-500 bg-opacity-50">2</div>
+                            <div className="bg-red-500 bg-opacity-30">1</div>
+                            <div className="bg-blue-500 bg-opacity-30">2</div>
                         </div>
                     </div>
                 </div>
-                <div className="w-full aspect-video border-2 border-blue-500 overflow-hidden">
+                <div className="w-full aspect-video border-2 border-blue-500 bg-black bg-opacity-40 overflow-hidden">
                     {
                         secondPlayer !== null && (
                             <YouTube
