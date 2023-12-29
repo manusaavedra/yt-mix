@@ -42,7 +42,7 @@ export default function Controls() {
         return () => {
             window.removeEventListener('keydown', handleKeyboard)
         }
-    })
+    }, [])
 
     const onReadyFirstPlayer = (eventPlayer) => {
 
