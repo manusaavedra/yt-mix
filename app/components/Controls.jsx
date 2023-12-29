@@ -1,6 +1,6 @@
 import YouTube from "react-youtube";
 import { useStoreVideos } from "../store";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Controls() {
     const { firstPlayer, secondPlayer } = useStoreVideos()
@@ -9,7 +9,44 @@ export default function Controls() {
     const inputVolSecondPlayerRef = useRef()
     const inputTransitionRef = useRef()
 
+    const firstPlayerRef = useRef(null)
+    const secondPlayerRef = useRef(null)
+
+    useEffect(() => {
+        const handleKeyboard = (event) => {
+            const keypress = event.code
+
+            if (event.shiftKey && keypress === "KeyW") {
+                inputVolSecondPlayerRef.current.value = parseInt(inputVolSecondPlayerRef.current.value) + 1
+                secondPlayerRef.current.setVolume(inputVolSecondPlayerRef.current.value)
+            }
+
+            if (event.shiftKey && keypress === "KeyS") {
+                inputVolSecondPlayerRef.current.value = parseInt(inputVolSecondPlayerRef.current.value) - 1
+                secondPlayerRef.current.setVolume(inputVolSecondPlayerRef.current.value)
+            }
+
+            if (event.shiftKey && keypress === "KeyQ") {
+                inputVolFirstPlayerRef.current.value = parseInt(inputVolFirstPlayerRef.current.value) + 1
+                firstPlayerRef.current.setVolume(inputVolFirstPlayerRef.current.value)
+            }
+
+            if (event.shiftKey && keypress === "KeyA") {
+                inputVolFirstPlayerRef.current.value = parseInt(inputVolFirstPlayerRef.current.value) - 1
+                firstPlayerRef.current.setVolume(inputVolFirstPlayerRef.current.value)
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyboard)
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyboard)
+        }
+    })
+
     const onReadyFirstPlayer = (eventPlayer) => {
+
+        firstPlayerRef.current = eventPlayer.target
 
         if (inputTransitionRef.current.value >= 0.85) {
             eventPlayer.target.mute()
@@ -41,6 +78,8 @@ export default function Controls() {
     }
 
     const onReadySecondPlayer = (eventPlayer) => {
+        secondPlayerRef.current = eventPlayer.target
+
         if (inputTransitionRef.current.value <= 0.15) {
             eventPlayer.target.mute()
             eventPlayer.target.pauseVideo()
@@ -92,8 +131,8 @@ export default function Controls() {
                 </div>
                 <div className="pt-4">
                     <div className="relative flex mt-8 h-[25%]">
-                        <input className="vertical red" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
-                        <input className="vertical blue" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
+                        <input className="vertical red" title="(Shift+Q [>] Shift+A [<] )" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
+                        <input className="vertical blue" title="(Shift+W [>] Shift+S [<] )" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
                     </div>
                     <div className="w-[90%] mx-auto mt-10 p-2">
                         <input ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
