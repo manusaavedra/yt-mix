@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { create } from "zustand";
 
@@ -6,7 +5,7 @@ export async function fetchVideos(searchText = "") {
     const url = 'https://www.googleapis.com/youtube/v3/search'
 
     const params = new URLSearchParams()
-    params.append('key', 'AIzaSyD2ZKFN2s-oVu2K_G_lLxvETp8qIPOUMtk')
+    params.append('key', process.env.NEXT_PUBLIC_YOUTUBE_API_KEY)
     params.append('type', 'video')
     params.append('part', 'snippet')
     params.append('maxResults', 12)
