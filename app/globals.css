@@ -89,7 +89,7 @@ input[type=range]::-webkit-slider-runnable-track {
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 1px 1px 1px #000000;
-  background: #000;
+  background: #242424;
   border-radius: 5px;
   border: 1px solid #000000;
 }
