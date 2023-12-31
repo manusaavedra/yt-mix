@@ -58,12 +58,51 @@ export function useVideos() {
     }
 }
 
-export function useFavorites() {
-    const { favorites, fetchFavorites } = useStoreVideos()
+export function useHistory() {
+    const { history } = useStoreVideos()
 
     useEffect(() => {
-        fetchFavorites()
-    }, [fetchFavorites])
+        const localFavorites = localStorage.getItem('history_songs')
+        if (localFavorites) {
+            useStoreVideos.setState({ history: JSON.parse(localFavorites) })
+        }
+    }, [])
+
+    const toHistory = (video) => {
+        const history = history.filter((history) => history.id.videoId !== video.id.videoId)
+        const newHistory = [
+            ...history,
+            video
+        ]
+
+        localStorage.setItem('history_songs', JSON.stringify(newHistory))
+        useStoreVideos.setState({ history: newHistory })
+    }
+
+    const removeItemHistory = (video) => {
+        const history = history.filter((history) => history.id.videoId !== video.id.videoId)
+        localStorage.setItem('history_songs', JSON.stringify(history))
+        useStoreVideos.setState({ favorites: history })
+    }
+
+    const findByVideoTitle = (text) => {
+        return history.filter((video) => {
+            return String(video.snippet.title).toLowerCase().includes(String(text).toLowerCase())
+        })
+    }
+
+    return { history, toHistory, removeItemHistory, findByVideoTitle }
+}
+
+export function useFavorites() {
+    const { favorites } = useStoreVideos()
+
+    useEffect(() => {
+        const localFavorites = localStorage.getItem('favorites_songs')
+        if (localFavorites) {
+            useStoreVideos.setState({ favorites: JSON.parse(localFavorites) })
+        }
+    }, [])
 
     const toFavorites = (video) => {
         const Allfavorites = favorites.filter((favorite) => favorite.id.videoId !== video.id.videoId)
@@ -76,24 +115,25 @@ export function useFavorites() {
         useStoreVideos.setState({ favorites: newFavorites })
     }
 
+    const removeFavorite = (video) => {
+        const Allfavorites = favorites.filter((favorite) => favorite.id.videoId !== video.id.videoId)
+        localStorage.setItem('favorites_songs', JSON.stringify(Allfavorites))
+        useStoreVideos.setState({ favorites: Allfavorites })
+    }
+
     const findByVideoTitle = (text) => {
         return favorites.filter((video) => {
             return String(video.snippet.title).toLowerCase().includes(String(text).toLowerCase())
         })
     }
 
-    return { favorites, fetchFavorites, toFavorites, findByVideoTitle }
+    return { favorites, toFavorites, removeFavorite, findByVideoTitle }
 }
 
 export const useStoreVideos = create((set, get) => ({
     videos: [],
     favorites: [],
+    history: [],
     firstPlayer: null,
-    secondPlayer: null,
-    fetchFavorites: () => {
-        const localFavorites = localStorage.getItem('favorites_songs')
-        if (localFavorites) {
-            set({ favorites: JSON.parse(localFavorites) })
-        }
-    }
+    secondPlayer: null
 }))
