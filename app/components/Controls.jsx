@@ -111,7 +111,7 @@ export default function Controls() {
 
     return (
         <div className="sticky top-[50px] left-0 border-b border-black w-full controls z-30">
-            <div className="py-4 grid grid-cols-[minmax(280px,380px)_200px_minmax(280px,360px)] justify-center max-h-[400px] p-4">
+            <div className="py-4 grid grid-cols-[minmax(280px,380px)_200px_minmax(280px,360px)] items-stretch justify-center max-h-[400px] p-4">
                 <div className="w-full aspect-video border-2 border-red-500 bg-black bg-opacity-40 overflow-hidden">
                     {
                         firstPlayer !== null && (
