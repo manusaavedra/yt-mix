@@ -1,6 +1,7 @@
 import { BsClockHistory, BsHeart, BsTrash } from "react-icons/bs"
 import { useState } from "react"
 import ListFavorites from "./ListFavorites"
+import ListHistory from "./ListHistory"
 
 export default function AsideBar() {
     const [section, setSection] = useState("history")
@@ -10,12 +11,12 @@ export default function AsideBar() {
     }
 
     const COMPONENTS = {
-        favorites: {
+        history: {
             title: "Historial",
             icon: <BsClockHistory />,
-            panel: <div>Historial</div>
+            panel: <ListHistory />
         },
-        history: {
+        favorites: {
             title: "Favoritos",
             icon: <BsHeart />,
             panel: <ListFavorites />

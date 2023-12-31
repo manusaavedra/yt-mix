@@ -1,16 +1,29 @@
 "use client"
 
-import { useFavorites, useVideos } from "./store";
+import { fetchVideos, useFavorites, useStoreVideos, useVideos } from "./store";
 import Header from "./components/Header";
 import AsideBar from "./components/AsideBar";
 import Controls from "./components/Controls";
 import VideoItem from "./components/VideoItem";
 import useMobile from "./hooks/useMobile";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export default function Home() {
     const { isMobile } = useMobile()
     const { videos, toFirstPlayer, toSecondPlayer, searchVideos } = useVideos()
     const { toFavorites } = useFavorites()
+
+    const { data } = useQuery({
+        queryKey: ['listvideos'],
+        queryFn: async () => await fetchVideos(),
+        initialData: [],
+        refetchOnWindowFocus: false
+    })
+
+    useEffect(() => {
+        useStoreVideos.setState({ videos: data || [] })
+    }, [data])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -49,14 +62,8 @@ export default function Home() {
                                         imageUrl={video.snippet.thumbnails.medium.url}
                                         title={video.snippet.title}
                                         onFavorite={() => toFavorites(video)}
-                                        onAddToFirstPlayer={() => toFirstPlayer({
-                                            id: video.id.videoId,
-                                            title: video.snippet.title,
-                                        })}
-                                        onAddToSecondPlayer={() => toSecondPlayer({
-                                            id: video.id.videoId,
-                                            title: video.snippet.title,
-                                        })}
+                                        onAddToFirstPlayer={() => toFirstPlayer(video)}
+                                        onAddToSecondPlayer={() => toSecondPlayer(video)}
                                     />
                                 ))
                             }

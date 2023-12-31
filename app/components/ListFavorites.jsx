@@ -24,7 +24,7 @@ export default function ListFavorites() {
                         <li className="flex items-center gap-2 border-b border-gray-800 py-4 px-1 group relative" key={fav.id.videoId}>
                             <div className="group-hover:block hidden absolute top-3 left-2">
                                 <button
-                                    className="bg-white text-red-500 p-2 font-semibold rounded-md"
+                                    className="bg-gray-700 text-white p-2 font-semibold rounded-md"
                                     onClick={() => removeFavorite(fav)}
                                 >
                                     <BsTrash />
@@ -36,16 +36,16 @@ export default function ListFavorites() {
                             <p className="text-xs truncate overflow-hidden w-[180px] ...">{fav.snippet.title}</p>
                             <div className="absolute top-4 right-2 flex gap-4 items-center">
                                 <div className="group-hover:flex items-center gap-2 hidden">
-                                    <button className="bg-red-500 font-bold text-white px-2" onClick={() => toFirstPlayer({
-                                        id: fav.id.videoId,
-                                        title: fav.snippet.title,
-                                    })}>
+                                    <button
+                                        className="bg-red-500 font-bold text-white px-2"
+                                        onClick={() => toFirstPlayer(fav)}
+                                    >
                                         1
                                     </button>
-                                    <button className="bg-blue-500 font-bold text-white px-2" onClick={() => toSecondPlayer({
-                                        id: fav.id.videoId,
-                                        title: fav.snippet.title,
-                                    })}>
+                                    <button
+                                        className="bg-blue-500 font-bold text-white px-2"
+                                        onClick={() => toSecondPlayer(fav)}
+                                    >
                                         2
                                     </button>
                                 </div>

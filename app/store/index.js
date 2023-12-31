@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { create } from "zustand";
 
-async function fetchVideos(searchText = "") {
+export async function fetchVideos(searchText = "") {
     const url = 'https://www.googleapis.com/youtube/v3/search'
 
     const params = new URLSearchParams()
-    params.append('key', 'AIzaSyCCP5lU5NjOz3JISOMxRsG_1WtV9h6nDhw')
+    params.append('key', 'AIzaSyD2ZKFN2s-oVu2K_G_lLxvETp8qIPOUMtk')
     params.append('type', 'video')
     params.append('part', 'snippet')
     params.append('maxResults', 12)
@@ -24,24 +24,24 @@ async function fetchVideos(searchText = "") {
 
 export function useVideos() {
     const { videos } = useStoreVideos()
-
-    const { data } = useQuery({
-        queryKey: ['videos'],
-        queryFn: async () => await fetchVideos(),
-        initialData: [],
-        refetchOnWindowFocus: false
-    })
-
-    useEffect(() => {
-        useStoreVideos.setState({ videos: data || [] })
-    }, [data])
+    const { toHistory } = useHistory()
 
     const toFirstPlayer = (video) => {
-        useStoreVideos.setState({ firstPlayer: video })
+        const player = {
+            id: video.id.videoId,
+            title: video.snippet.title
+        }
+        useStoreVideos.setState({ firstPlayer: player })
+        toHistory(video)
     }
 
     const toSecondPlayer = (video) => {
-        useStoreVideos.setState({ secondPlayer: video })
+        const player = {
+            id: video.id.videoId,
+            title: video.snippet.title
+        }
+        useStoreVideos.setState({ secondPlayer: player })
+        toHistory(video)
     }
 
     const searchVideos = async (value) => {
@@ -69,10 +69,11 @@ export function useHistory() {
     }, [])
 
     const toHistory = (video) => {
-        const history = history.filter((history) => history.id.videoId !== video.id.videoId)
+        const newVideo = { ...video, date: new Date() }
+        const AllHistory = history.filter((history) => history.id.videoId !== video.id.videoId)
         const newHistory = [
-            ...history,
-            video
+            ...AllHistory,
+            newVideo
         ]
 
         localStorage.setItem('history_songs', JSON.stringify(newHistory))
@@ -80,9 +81,9 @@ export function useHistory() {
     }
 
     const removeItemHistory = (video) => {
-        const history = history.filter((history) => history.id.videoId !== video.id.videoId)
-        localStorage.setItem('history_songs', JSON.stringify(history))
-        useStoreVideos.setState({ favorites: history })
+        const AllHistory = history.filter((history) => history.id.videoId !== video.id.videoId)
+        localStorage.setItem('history_songs', JSON.stringify(AllHistory))
+        useStoreVideos.setState({ history: AllHistory })
     }
 
     const findByVideoTitle = (text) => {
@@ -130,7 +131,7 @@ export function useFavorites() {
     return { favorites, toFavorites, removeFavorite, findByVideoTitle }
 }
 
-export const useStoreVideos = create((set, get) => ({
+export const useStoreVideos = create(() => ({
     videos: [],
     favorites: [],
     history: [],
