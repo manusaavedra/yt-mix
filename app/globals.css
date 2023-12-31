@@ -47,7 +47,7 @@ body {
 
 .controls {
   background: rgb(3, 7, 18);
-  background: linear-gradient(0deg, rgba(3, 7, 18, 1) 18%, rgb(45, 2, 30) 100%);
+  background: linear-gradient(0deg, rgba(3, 7, 18, 1) 18%, rgb(45, 2, 3) 100%);
 }
 
 input[type="text"] {
