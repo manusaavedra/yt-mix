@@ -17,7 +17,7 @@ export default function ListHistory() {
             <ul>
                 {
                     history.length === 0 && (
-                        <li>No hay favoritos aún</li>
+                        <li>Historial vacío</li>
                     )
                 }
                 {
