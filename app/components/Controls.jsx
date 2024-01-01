@@ -112,7 +112,8 @@ export default function Controls() {
     return (
         <div className="sticky top-[50px] left-0 border-b border-black w-full controls z-30">
             <div className="py-4 grid grid-cols-[minmax(280px,380px)_200px_minmax(280px,360px)] items-stretch justify-center max-h-[400px] p-4">
-                <div className="w-full aspect-video border-2 border-red-500 bg-black bg-opacity-40 overflow-hidden">
+                <div className="relative w-full aspect-video rounded-sm border-2 border-red-500 bg-black bg-opacity-40 overflow-hidden">
+                    <div className="w-10 bg-red-500 text-white font-bold rounded-br-xl text-center absolute top-0 left-0">1</div>
                     {
                         firstPlayer !== null && (
                             <YouTube
@@ -134,15 +135,12 @@ export default function Controls() {
                         <input className="vertical red" title="(Shift+Q [>] Shift+A [<] )" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
                         <input className="vertical blue" title="(Shift+W [>] Shift+S [<] )" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
                     </div>
-                    <div className="w-[90%] mx-auto mt-10 p-2">
+                    <div className="w-[90%] mx-auto mt-14 p-2">
                         <input ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
-                        <div className="grid grid-cols-2 text-center">
-                            <div className="bg-red-500 bg-opacity-30">1</div>
-                            <div className="bg-blue-500 bg-opacity-30">2</div>
-                        </div>
                     </div>
                 </div>
-                <div className="w-full aspect-video border-2 border-blue-500 bg-black bg-opacity-40 overflow-hidden">
+                <div className="relative w-full aspect-video rounded-sm border-2 border-blue-500 bg-black bg-opacity-40 overflow-hidden">
+                    <div className="w-10 bg-blue-500 text-white font-bold rounded-br-xl text-center absolute top-0 left-0">2</div>
                     {
                         secondPlayer !== null && (
                             <YouTube

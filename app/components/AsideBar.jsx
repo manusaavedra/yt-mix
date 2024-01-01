@@ -24,7 +24,7 @@ export default function AsideBar() {
     }
 
     return (
-        <aside className="bg-black h-[calc(100vh-60px)] overflow-auto min-w-[260px] max-w-[260px] px-2">
+        <aside className="bg-neutral-950 h-[calc(100vh-50px)] overflow-auto min-w-[260px] max-w-[260px] px-2 py-4">
             <div className="flex items-center justify-between">
                 {
                     Object.keys(COMPONENTS).map((tab) => {

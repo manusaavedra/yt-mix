@@ -10,7 +10,7 @@ export default function ListHistory() {
 
     return (
         <div>
-            <div className="sticky top-0 bg-black mb-4 left-0 pt-4 pb-2">
+            <div className="sticky top-0 bg-inherit mb-4 left-0 pt-4 pb-2">
                 <h4 className="font-semibold mb-2">Historial</h4>
                 <input className="w-full !py-1" onChange={searchInput.onChange} value={searchInput.value} type="text" placeholder="Buscar..." />
             </div>

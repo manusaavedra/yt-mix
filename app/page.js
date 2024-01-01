@@ -43,14 +43,12 @@ export default function Home() {
     return (
         <div className="h-screen overflow-hidden">
             <Header />
-            <main className="flex gap-2">
+            <main className="grid grid-cols-[260px_1fr] gap-2">
                 <AsideBar />
-                <div className="w-full">
+                <div className="w-full bg-neutral-950">
                     <Controls />
-                    <form className="w-full max-w-4xl p-4" onSubmit={handleSubmit}>
-                        <div>
-                            <input className="w-full" type="text" name="search" placeholder="Buscar en youtube..." />
-                        </div>
+                    <form className="w-full shadow-xl p-4" onSubmit={handleSubmit}>
+                        <input className="w-full" type="text" name="search" placeholder="Buscar en youtube..." />
                     </form>
                     <div className="w-full mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
                         {videos?.length !== 0 && <h4 className="font-bold text-base my-4">Resultados:</h4>}

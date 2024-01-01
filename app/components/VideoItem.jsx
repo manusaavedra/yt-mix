@@ -15,11 +15,11 @@ export default function VideoItem({ title, imageUrl, onFavorite, onAddToFirstPla
                     <BsHeartFill />
                 </button>
             </div>
-            <div className="group-hover:flex absolute bottom-0 left-0 w-full hidden items-center gap-2">
-                <button className="w-1/2 bg-red-500 bg-opacity-60 text-4xl font-bold text-white" onClick={onAddToFirstPlayer}>
+            <div className="group-hover:flex absolute bottom-0 left-0 w-full hidden items-center gap-1">
+                <button className="w-1/2 bg-red-500 text-4xl font-bold text-white" onClick={onAddToFirstPlayer}>
                     1
                 </button>
-                <button className="w-1/2 bg-blue-500 bg-opacity-60 text-4xl font-bold text-white" onClick={onAddToSecondPlayer}>
+                <button className="w-1/2 bg-blue-500 text-4xl font-bold text-white" onClick={onAddToSecondPlayer}>
                     2
                 </button>
             </div>

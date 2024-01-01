@@ -42,12 +42,12 @@
 
 
 body {
-  @apply bg-gray-950 text-white
+  @apply bg-black text-white
 }
 
 .controls {
   background: rgb(3, 7, 18);
-  background: linear-gradient(0deg, rgba(3, 7, 18, 1) 18%, rgb(45, 2, 3) 100%);
+  background: linear-gradient(0deg, rgb(8, 8, 8) 18%, rgb(13, 2, 45) 100%);
 }
 
 input[type="text"] {
