@@ -57,6 +57,7 @@ export default function Home() {
                                 videos.map((video) => (
                                     <VideoItem
                                         key={video.id.videoId}
+                                        videoId={video.id.videoId}
                                         imageUrl={video.snippet.thumbnails.medium.url}
                                         title={video.snippet.title}
                                         onFavorite={() => toFavorites(video)}
