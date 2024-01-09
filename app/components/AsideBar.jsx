@@ -31,7 +31,7 @@ export default function AsideBar() {
                         const isActive = section === tab
 
                         return (
-                            <div className={`${isActive ? 'text-red-500 border-b-2 border-red-500' : ''} font-semibold flex px-2 items-center gap-2 cursor-default`} key={tab} onClick={() => handleSection(tab)}>
+                            <div className={`${isActive ? 'text-gray-300 border-b-2 border-gray-300' : 'text-neutral-800'} font-semibold flex px-2 items-center gap-2 cursor-default`} key={tab} onClick={() => handleSection(tab)}>
                                 {COMPONENTS[tab].icon}
                                 {COMPONENTS[tab].title}
                             </div>
