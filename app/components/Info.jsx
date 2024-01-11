@@ -6,7 +6,6 @@ const Info = () => {
         <div className="bg-neutral-800 text-white p-4 flex flex-col gap-6 items-center justify-between">
             <div className="flex flex-col items-center">
                 <h1 className="text-2xl font-bold">YT_Mixer</h1>
-                <span className="text-sm ml-2 text-gray-500">(Proyecto con youtube API, Next.js)</span>
             </div>
             <div className="flex items-center">
                 <div className="mr-4">
