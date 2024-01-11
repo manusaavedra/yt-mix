@@ -15,7 +15,7 @@ const Info = () => {
                     </picture>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <p className="font-semibold">Desarrollador: Manuel Saavedra</p>
+                    <p className="font-semibold">Hecho con ❤️ por Manuel Saavedra</p>
                     <a href="https://github.com/TuUsuarioDeGitHub" target="_blank" rel="noopener noreferrer" className="flex items-center bg-gray-800 text-white py-2 px-4 rounded-md transition duration-300 ease-in-out hover:bg-gray-700">
                         <FaGithub className="mr-2" />
                         Ver perfil en GitHub
