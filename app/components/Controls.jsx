@@ -1,6 +1,7 @@
 import YouTube from "react-youtube";
 import { useStoreVideos } from "../store";
 import { useEffect, useRef } from "react";
+import { crossfader } from "@/helpers";
 
 export default function Controls() {
     const { firstPlayer, secondPlayer } = useStoreVideos()
@@ -45,7 +46,6 @@ export default function Controls() {
     }, [])
 
     const onReadyFirstPlayer = (eventPlayer) => {
-
         firstPlayerRef.current = eventPlayer.target
 
         if (inputTransitionRef.current.value >= 0.85) {
@@ -57,30 +57,12 @@ export default function Controls() {
         }
 
         eventPlayer.target.setVolume(inputVolFirstPlayerRef.current.value)
-
-        inputVolFirstPlayerRef.current.addEventListener('input', (e) => {
-            eventPlayer.target.setVolume(e.target.value)
-        })
-
-        inputTransitionRef.current.addEventListener('input', (e) => {
-            const firstPlayerVolume = inputVolFirstPlayerRef.current.value
-            const volume = (firstPlayerVolume / 100) * Math.cos((e.target.value) * 0.5 * Math.PI)
-            eventPlayer.target.setVolume(volume * 100)
-
-            if (e.target.value >= 0.85) {
-                eventPlayer.target.pauseVideo()
-                eventPlayer.target.mute()
-            } else {
-                eventPlayer.target.playVideo()
-                eventPlayer.target.unMute()
-            }
-        })
     }
 
     const onReadySecondPlayer = (eventPlayer) => {
         secondPlayerRef.current = eventPlayer.target
 
-        if (inputTransitionRef.current.value <= 0.15) {
+        if (inputTransitionRef.current.value <= -0.85) {
             eventPlayer.target.mute()
             eventPlayer.target.pauseVideo()
         } else {
@@ -89,24 +71,42 @@ export default function Controls() {
         }
 
         eventPlayer.target.setVolume(inputVolSecondPlayerRef.current.value)
+    }
 
-        inputVolSecondPlayerRef.current.addEventListener('input', (e) => {
-            eventPlayer.target.setVolume(e.target.value)
-        })
+    const handleChangeVolumeFirstPlayer = (e) => {
+        firstPlayerRef.current.setVolume(e.target.value)
+    }
 
-        inputTransitionRef.current.addEventListener('input', (e) => {
-            const secondPlayerVolume = inputVolSecondPlayerRef.current.value
-            const volume = (secondPlayerVolume / 100) * Math.cos((1.0 - (e.target.value)) * 0.5 * Math.PI)
-            eventPlayer.target.setVolume(volume * 100)
+    const handleChangeVolumeSecondPlayer = (e) => {
+        secondPlayerRef.current.setVolume(e.target.value)
+    }
 
-            if (e.target.value <= 0.15) {
-                eventPlayer.target.pauseVideo()
-                eventPlayer.target.mute()
-            } else {
-                eventPlayer.target.playVideo()
-                eventPlayer.target.unMute()
-            }
-        })
+    const handleCrossFade = (e) => {
+        const { value } = e.target
+        const threshold = parseFloat(value)
+        const firstPlayerVolume = inputVolFirstPlayerRef.current.value
+        const secondPlayerVolume = inputVolSecondPlayerRef.current.value
+
+        const [volume1, volume2] = crossfader(threshold, firstPlayerVolume, secondPlayerVolume)
+
+        if (threshold < 0.9) {
+            firstPlayerRef.current.playVideo()
+            firstPlayerRef.current.unMute()
+        } else {
+            firstPlayerRef.current.pauseVideo()
+            firstPlayerRef.current.mute()
+        }
+
+        if (threshold > -0.9) {
+            secondPlayerRef.current.playVideo()
+            secondPlayerRef.current.unMute()
+        } else {
+            secondPlayerRef.current.pauseVideo()
+            secondPlayerRef.current.mute()
+        }
+
+        firstPlayerRef.current.setVolume(volume1)
+        secondPlayerRef.current.setVolume(volume2)
     }
 
     return (
@@ -132,11 +132,37 @@ export default function Controls() {
                 </div>
                 <div className="pt-4">
                     <div className="relative flex mt-8 h-[25%]">
-                        <input className="vertical red" title="(Shift+Q [>] Shift+A [<] )" ref={inputVolFirstPlayerRef} type="range" defaultValue={75} min={0} max={100} />
-                        <input className="vertical blue" title="(Shift+W [>] Shift+S [<] )" ref={inputVolSecondPlayerRef} type="range" defaultValue={75} min={0} max={100} />
+                        <input
+                            ref={inputVolFirstPlayerRef}
+                            title="(Shift+Q [>] Shift+A [<] )"
+                            type="range"
+                            className="vertical red"
+                            onInput={handleChangeVolumeFirstPlayer}
+                            defaultValue={75}
+                            min={0}
+                            max={100}
+                        />
+                        <input
+                            ref={inputVolSecondPlayerRef}
+                            title="(Shift+W [>] Shift+S [<] )"
+                            type="range"
+                            className="vertical blue"
+                            onInput={handleChangeVolumeSecondPlayer}
+                            defaultValue={75}
+                            min={0}
+                            max={100}
+                        />
                     </div>
                     <div className="w-[90%] mx-auto mt-14 p-2">
-                        <input ref={inputTransitionRef} type="range" step={0.01} defaultValue={0} min={0} max={1} />
+                        <input
+                            ref={inputTransitionRef}
+                            onInput={handleCrossFade}
+                            type="range"
+                            step={0.01}
+                            defaultValue={-1}
+                            min={-1}
+                            max={1}
+                        />
                     </div>
                 </div>
                 <div className="relative w-full aspect-video rounded-sm border-2 border-blue-500 bg-black bg-opacity-40 overflow-hidden">
