@@ -2,7 +2,7 @@ import { BsDownload, BsHeartFill } from "react-icons/bs"
 
 export default function VideoItem({ videoId, title, imageUrl, onFavorite, onAddToFirstPlayer, onAddToSecondPlayer }) {
     return (
-        <div className="relative group overflow-hidden bg-black bg-opacity-30 border w-full rounded-md p-2">
+        <div className="relative group overflow-hidden bg-black bg-opacity-30 border border-neutral-800 w-full rounded-md p-2">
             <picture>
                 <img className="w-full" src={imageUrl} alt={title} />
             </picture>
