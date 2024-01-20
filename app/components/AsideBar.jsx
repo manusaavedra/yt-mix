@@ -24,8 +24,8 @@ export default function AsideBar() {
     }
 
     return (
-        <aside className="bg-neutral-950 h-[calc(100vh-50px)] overflow-auto min-w-[260px] max-w-[260px] px-2 py-4">
-            <div className="flex items-center justify-between">
+        <aside className="bg-neutral-950 h-[calc(100vh-50px)] overflow-auto min-w-[260px] max-w-[260px] px-2">
+            <div className="flex items-center justify-between py-2">
                 {
                     Object.keys(COMPONENTS).map((tab) => {
                         const isActive = section === tab

@@ -9,7 +9,7 @@ export default function ListFavorites() {
 
     return (
         <div>
-            <div className="sticky z-50 top-0 bg-inherit mb-4 left-0 pt-4 pb-2">
+            <div className="sticky z-50 top-0 bg-neutral-950 mb-4 left-0 pt-4 pb-2">
                 <h4 className="font-semibold mb-2">Favoritos</h4>
                 <input className="w-full !py-1" onChange={searchInput.onChange} value={searchInput.value} type="text" placeholder="Buscar favorito" />
             </div>
