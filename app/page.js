@@ -1,10 +1,10 @@
 "use client"
 
 import { fetchVideos, useFavorites, useStoreVideos, useVideos } from "./store";
-import Header from "./components/Header";
-import AsideBar from "./components/AsideBar";
-import Controls from "./components/Controls";
-import VideoItem from "./components/VideoItem";
+import Header from "../components/Header";
+import AsideBar from "../components/AsideBar";
+import Controls from "../components/Controls";
+import VideoItem from "../components/VideoItem";
 import useMobile from "./hooks/useMobile";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -20,6 +20,7 @@ export default function Home() {
         initialData: [],
         refetchOnWindowFocus: false
     })
+
 
     useEffect(() => {
         useStoreVideos.setState({ videos: data || [] })

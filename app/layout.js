@@ -1,4 +1,4 @@
-import QueryProvider from './components/QueryProvider'
+import QueryProvider from '../components/QueryProvider'
 import './globals.css'
 import { Inter } from 'next/font/google'
 

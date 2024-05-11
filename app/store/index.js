@@ -85,13 +85,18 @@ export function useHistory() {
         useStoreVideos.setState({ history: AllHistory })
     }
 
+    const removeAllHistory = (video) => {
+        localStorage.setItem('history_songs', JSON.stringify([]))
+        useStoreVideos.setState({ history: [] })
+    }
+
     const findByVideoTitle = (text) => {
         return history.filter((video) => {
             return String(video.snippet.title).toLowerCase().includes(String(text).toLowerCase())
         })
     }
 
-    return { history, toHistory, removeItemHistory, findByVideoTitle }
+    return { history, toHistory, removeItemHistory, removeAllHistory, findByVideoTitle }
 }
 
 export function useFavorites() {
