@@ -1,12 +1,12 @@
+"use client"
+
 import { useStoreVideos } from "../app/store";
 import { useEffect, useRef } from "react";
 import { crossfader } from "@/helpers";
-import "@justinribeiro/lite-youtube"
 import YoutubePlayer from "./YoutubePlayer";
 
 export default function Controls() {
     const { firstPlayer, secondPlayer } = useStoreVideos()
-
     const inputVolFirstPlayerRef = useRef()
     const inputVolSecondPlayerRef = useRef()
     const inputTransitionRef = useRef()

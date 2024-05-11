@@ -1,4 +1,5 @@
-import "@justinribeiro/lite-youtube"
+"use client"
+
 import { useEffect } from "react"
 
 export default function YoutubePlayer({
@@ -10,6 +11,10 @@ export default function YoutubePlayer({
 }) {
 
     useEffect(() => {
+        const mountedYTPlayer = async () => await import("@justinribeiro/lite-youtube")
+
+        mountedYTPlayer()
+
         const tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         document.body.appendChild(tag)
