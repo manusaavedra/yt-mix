@@ -48,5 +48,5 @@ export const crossfader = (threshold, value1, value2) => {
         return [interpolatedValue1, value2];
     }
 
-    return [interpolatedValue1, interpolatedValue2];
+    return [parseFloat(interpolatedValue1), parseFloat(interpolatedValue2)];
 }

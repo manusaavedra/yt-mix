@@ -14,6 +14,7 @@ export default function Controls() {
     const firstPlayerRef = useRef(null)
     const secondPlayerRef = useRef(null)
 
+
     useEffect(() => {
         const handleKeyboard = (event) => {
             const keypress = event.code
@@ -42,6 +43,8 @@ export default function Controls() {
         window.addEventListener('keydown', handleKeyboard)
 
         return () => {
+            firstPlayerRef.current = null
+            secondPlayerRef.current = null
             window.removeEventListener('keydown', handleKeyboard)
         }
     }, [])
@@ -50,32 +53,35 @@ export default function Controls() {
         firstPlayerRef.current = eventPlayer.target
 
         if (inputTransitionRef.current?.value >= 0.85) {
-            eventPlayer.target.mute()
-            eventPlayer.target.pauseVideo()
+            firstPlayerRef.current.mute()
+            firstPlayerRef.current.pauseVideo()
         } else {
-            eventPlayer.target.unMute()
-            eventPlayer.target.playVideo()
+            firstPlayerRef.current.unMute()
+            firstPlayerRef.current.playVideo()
         }
 
-        eventPlayer.target.setVolume(inputVolFirstPlayerRef.current?.value)
+        console.log(inputVolFirstPlayerRef.current?.value)
+
+        firstPlayerRef.current.setVolume(inputVolFirstPlayerRef.current?.value)
     }
 
     const onReadySecondPlayer = (eventPlayer) => {
         secondPlayerRef.current = eventPlayer.target
 
         if (inputTransitionRef.current?.value <= -0.85) {
-            eventPlayer.target.mute()
-            eventPlayer.target.pauseVideo()
+            secondPlayerRef.current.mute()
+            secondPlayerRef.current.pauseVideo()
         } else {
-            eventPlayer.target.unMute()
-            eventPlayer.target.playVideo()
+            secondPlayerRef.current.unMute()
+            secondPlayerRef.current.playVideo()
         }
 
-        eventPlayer.target.setVolume(inputVolSecondPlayerRef.current?.value)
+        secondPlayerRef.current.setVolume(inputVolSecondPlayerRef.current?.value)
     }
 
     const handleChangeVolumeFirstPlayer = (e) => {
         firstPlayerRef.current?.setVolume(e.target.value)
+        console.log(inputVolFirstPlayerRef.current?.value)
     }
 
     const handleChangeVolumeSecondPlayer = (e) => {
@@ -86,8 +92,8 @@ export default function Controls() {
         const { value } = e.target
         const threshold = parseFloat(value)
 
-        const firstPlayerVolume = inputVolFirstPlayerRef.current?.value
-        const secondPlayerVolume = inputVolSecondPlayerRef.current?.value
+        const firstPlayerVolume = parseFloat(inputVolFirstPlayerRef.current.value)
+        const secondPlayerVolume = parseFloat(inputVolSecondPlayerRef.current.value)
 
         const [volume1, volume2] = crossfader(threshold, firstPlayerVolume, secondPlayerVolume)
 
