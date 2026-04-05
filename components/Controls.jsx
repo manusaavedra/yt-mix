@@ -270,7 +270,7 @@ export default function Controls() {
         playerId
     }) => (
         <div className="flex flex-col gap-3">
-            <div className={`relative overflow-hidden rounded-2xl border bg-black/30 shadow-lg ${color === "red" ? "border-red-500/60" : "border-blue-500/60"}`}>
+            <div className={`relative min-h-[180px] overflow-hidden rounded-2xl border bg-black/30 shadow-lg sm:min-h-[260px] ${color === "red" ? "border-red-500/60" : "border-blue-500/60"}`}>
                 <div className={`absolute left-0 top-0 z-10 w-12 rounded-br-2xl py-1 text-center text-sm font-black text-white ${color === "red" ? "bg-red-500" : "bg-blue-500"}`}>
                     {deckNumber}
                 </div>

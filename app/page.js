@@ -65,15 +65,6 @@ export default function Home() {
     }, [data])
 
     useEffect(() => {
-        if (didInitSearchRef.current) {
-            return
-        }
-
-        didInitSearchRef.current = true
-        searchVideos("Lo mas reciente de musica cristiana 2026")
-    }, [searchVideos])
-
-    useEffect(() => {
         return () => {
             if (toastTimeoutRef.current) {
                 clearTimeout(toastTimeoutRef.current)
