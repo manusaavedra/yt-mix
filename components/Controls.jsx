@@ -319,7 +319,7 @@ export default function Controls() {
                             videoId={playerData?.id || ""}
                             title={playerData?.title}
                             onPlayerReady={onReady}
-                            className="absolute inset-0 h-full opacity-0 pointer-events-none sm:opacity-100 sm:pointer-events-auto"
+                            className="absolute inset-0 h-0 sm:h-full opacity-0 pointer-events-none sm:opacity-100 sm:pointer-events-auto"
                         />
                     )
                 }
