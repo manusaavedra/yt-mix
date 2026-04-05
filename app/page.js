@@ -1,30 +1,85 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react";
+import { BsClockHistory, BsSearch } from "react-icons/bs";
+import { useQuery } from "@tanstack/react-query";
 import { fetchVideos, useFavorites, useStoreVideos, useVideos } from "./store";
 import Header from "../components/Header";
 import AsideBar from "../components/AsideBar";
 import Controls from "../components/Controls";
 import VideoItem from "../components/VideoItem";
-import useMobile from "./hooks/useMobile";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import ModalButton from "../components/ModalButton";
+
+function SearchModal({ videos, onSubmit, onFavorite, onAddToFirstPlayer, onAddToSecondPlayer }) {
+    return (
+        <div className="flex max-h-[78vh] flex-col gap-4">
+            <div>
+                <h3 className="text-xl font-bold">Buscar en YouTube</h3>
+                <p className="text-sm text-neutral-400">Encuentra un video y cargalo en el deck 1 o 2.</p>
+            </div>
+            <form className="sticky top-0 z-10 rounded-md bg-neutral-800" onSubmit={onSubmit}>
+                <input className="w-full" type="text" name="search" placeholder="Buscar en youtube..." />
+            </form>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                {videos.map((video) => (
+                    <VideoItem
+                        key={video.id.videoId}
+                        videoId={video.id.videoId}
+                        imageUrl={video.snippet.thumbnails.medium.url}
+                        title={video.snippet.title}
+                        onFavorite={() => onFavorite(video)}
+                        onAddToFirstPlayer={() => onAddToFirstPlayer(video)}
+                        onAddToSecondPlayer={() => onAddToSecondPlayer(video)}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+function HistoryModal({ onAddToFirstPlayer, onAddToSecondPlayer }) {
+    return (
+        <div className="max-h-[78vh] overflow-auto">
+            <AsideBar onAddToFirstPlayer={onAddToFirstPlayer} onAddToSecondPlayer={onAddToSecondPlayer} />
+        </div>
+    )
+}
 
 export default function Home() {
-    const { isMobile } = useMobile()
     const { videos, toFirstPlayer, toSecondPlayer, searchVideos } = useVideos()
     const { toFavorites } = useFavorites()
+    const didInitSearchRef = useRef(false)
+    const toastTimeoutRef = useRef(null)
+    const [toastMessage, setToastMessage] = useState("")
+    const [toastDeck, setToastDeck] = useState(null)
 
     const { data } = useQuery({
-        queryKey: ['listvideos'],
+        queryKey: ["listvideos"],
         queryFn: async () => await fetchVideos(),
         initialData: [],
         refetchOnWindowFocus: false
     })
 
-
     useEffect(() => {
         useStoreVideos.setState({ videos: data || [] })
     }, [data])
+
+    useEffect(() => {
+        if (didInitSearchRef.current) {
+            return
+        }
+
+        didInitSearchRef.current = true
+        searchVideos("Lo mas reciente de musica cristiana 2026")
+    }, [searchVideos])
+
+    useEffect(() => {
+        return () => {
+            if (toastTimeoutRef.current) {
+                clearTimeout(toastTimeoutRef.current)
+            }
+        }
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -32,45 +87,74 @@ export default function Home() {
         searchVideos(search)
     }
 
-    if (isMobile) {
-        return (
-            <div className="grid place-items-center h-screen p-4">
-                <p>Lo sentimos, <b>Ytmix</b> aún no esta adaptado para móviles.
-                    Usa un ordenador para poder usar Ytmix</p>
-            </div>
-        )
+    const showAddedToast = (video, deck) => {
+        const title = video?.snippet?.title || "La cancion"
+        setToastMessage(`"${title}" se anadio al deck ${deck}`)
+        setToastDeck(deck)
+
+        if (toastTimeoutRef.current) {
+            clearTimeout(toastTimeoutRef.current)
+        }
+
+        toastTimeoutRef.current = setTimeout(() => {
+            setToastMessage("")
+            setToastDeck(null)
+        }, 3000)
     }
 
+    const handleAddToFirstPlayer = (video) => {
+        toFirstPlayer(video)
+        showAddedToast(video, 1)
+    }
+
+    const handleAddToSecondPlayer = (video) => {
+        toSecondPlayer(video)
+        showAddedToast(video, 2)
+    }
+
+    const actions = (
+        <>
+            <ModalButton
+                className="grid h-10 w-10 place-items-center rounded-full border border-neutral-700 bg-neutral-900 text-white"
+                contentClassName="max-w-4xl bg-neutral-900"
+                position="top"
+                buttonContent={<BsClockHistory size={18} />}
+            >
+                <HistoryModal
+                    onAddToFirstPlayer={handleAddToFirstPlayer}
+                    onAddToSecondPlayer={handleAddToSecondPlayer}
+                />
+            </ModalButton>
+            <ModalButton
+                className="grid h-10 w-10 place-items-center rounded-full border border-neutral-700 bg-white text-black"
+                contentClassName="max-w-5xl bg-neutral-900"
+                position="top"
+                buttonContent={<BsSearch size={18} />}
+            >
+                <SearchModal
+                    videos={videos}
+                    onSubmit={handleSubmit}
+                    onFavorite={toFavorites}
+                    onAddToFirstPlayer={handleAddToFirstPlayer}
+                    onAddToSecondPlayer={handleAddToSecondPlayer}
+                />
+            </ModalButton>
+        </>
+    )
+
     return (
-        <div className="h-screen overflow-hidden">
-            <Header />
-            <main className="grid grid-cols-[260px_1fr] gap-2">
-                <AsideBar />
-                <div className="w-full bg-neutral-950">
-                    <Controls />
-                    <form className="w-full shadow-xl p-4" onSubmit={handleSubmit}>
-                        <input className="w-full" type="text" name="search" placeholder="Buscar en youtube..." />
-                    </form>
-                    <div className="w-full mx-auto p-4 overflow-auto h-[calc(100vh-380px)]">
-                        {videos?.length !== 0 && <h4 className="font-bold text-base my-4">Resultados:</h4>}
-                        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] place-content-center gap-4">
-                            {
-                                videos.map((video) => (
-                                    <VideoItem
-                                        key={video.id.videoId}
-                                        videoId={video.id.videoId}
-                                        imageUrl={video.snippet.thumbnails.medium.url}
-                                        title={video.snippet.title}
-                                        onFavorite={() => toFavorites(video)}
-                                        onAddToFirstPlayer={() => toFirstPlayer(video)}
-                                        onAddToSecondPlayer={() => toSecondPlayer(video)}
-                                    />
-                                ))
-                            }
-                        </div>
-                    </div>
-                </div>
+        <div className="grid min-h-dvh grid-rows-[auto_1fr] bg-neutral-950">
+            <Header actions={actions} />
+            <main className="overflow-x-hidden">
+                <Controls />
             </main>
+            {
+                toastMessage && (
+                    <div className={`pointer-events-none fixed left-1/2 top-20 z-50 w-[calc(100%-24px)] max-w-md -translate-x-1/2 rounded-md border bg-neutral-900/95 px-4 py-3 text-sm font-semibold text-white shadow-2xl ${toastDeck === 1 ? "border-red-500" : "border-blue-500"}`}>
+                        {toastMessage}
+                    </div>
+                )
+            }
         </div>
     )
 }

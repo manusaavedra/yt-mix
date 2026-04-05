@@ -3,20 +3,40 @@ import useInput from "../app/hooks/input"
 import { useHistory, useVideos } from "../app/store"
 import { timeago } from "@/helpers"
 
-export default function ListHistory() {
+export default function ListHistory({ onAddToFirstPlayer, onAddToSecondPlayer }) {
     const searchInput = useInput()
     const { history, removeItemHistory, removeAllHistory, findByVideoTitle } = useHistory()
     const { toFirstPlayer, toSecondPlayer } = useVideos()
 
+    const handleAddToFirstPlayer = (item) => {
+        if (onAddToFirstPlayer) {
+            onAddToFirstPlayer(item)
+            return
+        }
+
+        toFirstPlayer(item)
+    }
+
+    const handleAddToSecondPlayer = (item) => {
+        if (onAddToSecondPlayer) {
+            onAddToSecondPlayer(item)
+            return
+        }
+
+        toSecondPlayer(item)
+    }
+
     return (
-        <div>
-            <div className="sticky z-50 top-0 bg-neutral-950 mb-4 left-0 pt-4 pb-2">
-                <button onClick={removeAllHistory} className="flex w-full font-semibold gap-2 items-center bg-black bg-opacity-40 mb-2 p-2 rounded-md">
+        <>
+            <div className="sticky left-0 top-[40px] z-30 mb-4 flex flex-col gap-3 bg-neutral-900 pb-2 pt-4">
+                <div>
+                    <h4 className="mb-2 font-semibold">Historial</h4>
+                    <input className="!w-full py-1" onChange={searchInput.onChange} value={searchInput.value} type="text" placeholder="Buscar..." />
+                </div>
+                <button onClick={removeAllHistory} className="flex w-full items-center gap-2 rounded-md bg-black bg-opacity-40 p-2 font-semibold">
                     <BsTrash />
                     Borrar historial
                 </button>
-                <h4 className="font-semibold mb-2">Historial</h4>
-                <input className="w-full !py-1" onChange={searchInput.onChange} value={searchInput.value} type="text" placeholder="Buscar..." />
             </div>
             <ul>
                 {
@@ -26,8 +46,8 @@ export default function ListHistory() {
                 }
                 {
                     findByVideoTitle(searchInput.value).map((item) => (
-                        <li className="flex items-center gap-2 border-b border-gray-800 py-4 px-1 group relative" key={item.id.videoId}>
-                            <div className="group-hover:block hidden absolute top-4 left-2">
+                        <li className="group relative grid grid-cols-[30px_1fr_auto] sm:grid-cols-[30px_40px_1fr_auto] items-center gap-2 border-b border-gray-800 py-4 px-1" key={item.id.videoId}>
+                            <div>
                                 <button
                                     className="bg-gray-700 text-white p-2 font-semibold rounded-md"
                                     onClick={() => removeItemHistory(item)}
@@ -35,19 +55,19 @@ export default function ListHistory() {
                                     <BsTrash />
                                 </button>
                             </div>
-                            <picture className="w-[38px]">
+                            <picture className="w-[38px] hidden sm:block">
                                 <img src={item.snippet.thumbnails.medium.url} alt={item.snippet.title} />
                             </picture>
-                            <div>
-                                <p className="text-xs truncate overflow-hidden w-[180px] ...">{item.snippet.title}</p>
+                            <div className="min-w-0 pr-16">
+                                <p className="w-full overflow-hidden text-xs text-ellipsis whitespace-nowrap md:w-[180px]">{item.snippet.title}</p>
                                 <span className="text-xs text-gray-700 font-bold">{timeago(new Date(item.date))}</span>
                             </div>
                             <div className="absolute top-4 right-2 flex gap-4 items-center">
-                                <div className="group-hover:flex items-center gap-2 hidden">
-                                    <button className="bg-red-500 font-bold text-white px-2" onClick={() => toFirstPlayer(item)}>
+                                <div className="flex items-center gap-2 md:hidden md:group-hover:flex">
+                                    <button className="bg-red-500 font-bold text-white px-2" onClick={() => handleAddToFirstPlayer(item)}>
                                         1
                                     </button>
-                                    <button className="bg-blue-500 font-bold text-white px-2" onClick={() => toSecondPlayer(item)}>
+                                    <button className="bg-blue-500 font-bold text-white px-2" onClick={() => handleAddToSecondPlayer(item)}>
                                         2
                                     </button>
                                 </div>
@@ -56,6 +76,6 @@ export default function ListHistory() {
                     )).reverse()
                 }
             </ul>
-        </div>
+        </>
     )
 }

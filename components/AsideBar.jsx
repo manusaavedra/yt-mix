@@ -3,7 +3,7 @@ import { useState } from "react"
 import ListFavorites from "./ListFavorites"
 import ListHistory from "./ListHistory"
 
-export default function AsideBar() {
+export default function AsideBar({ onAddToFirstPlayer, onAddToSecondPlayer }) {
     const [section, setSection] = useState("history")
 
     const handleSection = (section) => {
@@ -14,24 +14,24 @@ export default function AsideBar() {
         history: {
             title: "Historial",
             icon: <BsClockHistory />,
-            panel: <ListHistory />
+            panel: <ListHistory onAddToFirstPlayer={onAddToFirstPlayer} onAddToSecondPlayer={onAddToSecondPlayer} />
         },
         favorites: {
             title: "Favoritos",
             icon: <BsHeart />,
-            panel: <ListFavorites />
+            panel: <ListFavorites onAddToFirstPlayer={onAddToFirstPlayer} onAddToSecondPlayer={onAddToSecondPlayer} />
         }
     }
 
     return (
-        <aside className="bg-neutral-950 h-[calc(100vh-50px)] overflow-auto min-w-[260px] max-w-[260px] px-2">
-            <div className="flex items-center justify-between py-2">
+        <aside className="relative px-1 pb-2">
+            <div className="sticky top-0 z-40  flex items-center gap-2 overflow-x-auto bg-neutral-900 px-3 py-2">
                 {
                     Object.keys(COMPONENTS).map((tab) => {
                         const isActive = section === tab
 
                         return (
-                            <div className={`${isActive ? 'text-gray-300 border-b-2 border-gray-300' : 'text-neutral-800'} font-semibold flex px-2 items-center gap-2 cursor-default`} key={tab} onClick={() => handleSection(tab)}>
+                            <div className={`${isActive ? 'border-b-2 border-gray-300 text-gray-300' : 'text-neutral-500'} flex shrink-0 cursor-default items-center gap-2 px-2 font-semibold`} key={tab} onClick={() => handleSection(tab)}>
                                 {COMPONENTS[tab].icon}
                                 {COMPONENTS[tab].title}
                             </div>
@@ -39,7 +39,7 @@ export default function AsideBar() {
                     })
                 }
             </div>
-            <div>
+            <div className="relative">
                 {COMPONENTS[section].panel}
             </div>
         </aside >

@@ -2,52 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #3F535D #D1DBDC;
-}
-
-/* Chrome, Edge and Safari */
-*::-webkit-scrollbar {
-  width: 5px;
-  width: 5px;
-}
-
-*::-webkit-scrollbar-track {
-  border-radius: 5px;
-  background-color: #D1DBDC;
-}
-
-*::-webkit-scrollbar-track:hover {
-  background-color: #B8C0C2;
-}
-
-*::-webkit-scrollbar-track:active {
-  background-color: #B8C0C2;
-}
-
-*::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background-color: #3F535D;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background-color: #4A5053;
-}
-
-*::-webkit-scrollbar-thumb:active {
-  background-color: #131F0E;
-}
 
 
 body {
   @apply bg-black text-white
-}
-
-.controls {
-  background: rgb(3, 7, 18);
-  background: linear-gradient(0deg, rgb(8, 8, 8) 18%, rgb(13, 2, 45) 100%);
 }
 
 input[type="text"] {
@@ -70,13 +28,6 @@ input[type=range] {
   min-width: 120px;
   height: 20px;
   background-color: transparent;
-}
-
-input[type=range].vertical {
-  max-width: 130px;
-  transform: rotate(-90deg);
-  transform-origin: center center;
-  margin: auto -15px;
 }
 
 input[type=range]:focus {
