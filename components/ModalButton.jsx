@@ -6,7 +6,7 @@ export const PosY = {
     bottom: "items-end"
 }
 
-export default function ModalButton({ children, buttonContent, className, contentClassName, position = 'center' }) {
+export default function ModalButton({ children, buttonContent, className, contentClassName, wrapperClassName, position = 'center' }) {
     const [open, setOpen] = useState(false)
 
     const handleOpen = () => {
@@ -18,7 +18,7 @@ export default function ModalButton({ children, buttonContent, className, conten
     }
 
     return (
-        <div>
+        <div className={wrapperClassName}>
             <button className={className} onClick={handleOpen}>
                 {buttonContent}
             </button>

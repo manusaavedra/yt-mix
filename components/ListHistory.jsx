@@ -31,7 +31,7 @@ export default function ListHistory({ onAddToFirstPlayer, onAddToSecondPlayer })
             <div className="sticky left-0 top-[40px] z-30 mb-4 flex flex-col gap-3 bg-neutral-900 pb-2 pt-4">
                 <div>
                     <h4 className="mb-2 font-semibold">Historial</h4>
-                    <input className="!w-full py-1" onChange={searchInput.onChange} value={searchInput.value} type="text" placeholder="Buscar..." />
+                    <input className="h-11 !w-full !rounded-full border border-neutral-700 bg-neutral-900 px-4 text-sm text-neutral-200 outline-none transition placeholder:text-neutral-400 focus:border-neutral-500 md:text-base" onChange={searchInput.onChange} value={searchInput.value} type="text" placeholder="Buscar..." />
                 </div>
                 <button onClick={removeAllHistory} className="flex w-full items-center gap-2 rounded-md bg-black bg-opacity-40 p-2 font-semibold">
                     <BsTrash />

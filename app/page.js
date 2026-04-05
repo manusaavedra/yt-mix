@@ -17,8 +17,13 @@ function SearchModal({ videos, onSubmit, onFavorite, onAddToFirstPlayer, onAddTo
                 <h3 className="text-xl font-bold">Buscar en YouTube</h3>
                 <p className="text-sm text-neutral-400">Encuentra un video y cargalo en el deck 1 o 2.</p>
             </div>
-            <form className="sticky top-0 z-10 rounded-md bg-neutral-800" onSubmit={onSubmit}>
-                <input className="w-full" type="text" name="search" placeholder="Buscar en youtube..." />
+            <form className="sticky top-0 z-10 bg-neutral-900" onSubmit={onSubmit}>
+                <input
+                    className="h-11 w-full !rounded-full border border-neutral-700 bg-neutral-900 px-4 text-sm text-neutral-200 outline-none transition placeholder:text-neutral-400 focus:border-neutral-500 md:text-base"
+                    type="text"
+                    name="search"
+                    placeholder="Buscar en YouTube..."
+                />
             </form>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                 {videos.map((video) => (
@@ -106,26 +111,39 @@ export default function Home() {
     const actions = (
         <>
             <ModalButton
+                wrapperClassName="min-w-0 flex-1"
+                className="flex h-11 w-full items-center justify-between rounded-full border border-neutral-700 bg-neutral-900 px-4 text-left text-neutral-300 transition hover:border-neutral-500 hover:bg-neutral-800"
+                contentClassName="max-w-5xl bg-neutral-900"
+                position="top"
+                buttonContent={
+                    <div className="flex w-full items-center justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
+                            <BsSearch size={18} className="shrink-0 text-neutral-400" />
+                            <p className="truncate text-sm text-neutral-400 md:text-base">
+                                Buscar en YouTube
+                            </p>
+                        </div>
+                        <span className="hidden rounded-full border border-neutral-700 px-2 py-1 text-xs text-neutral-500 sm:inline-flex">
+                            Enter
+                        </span>
+                    </div>
+                }
+            >
+                <SearchModal
+                    videos={videos}
+                    onSubmit={handleSubmit}
+                    onFavorite={toFavorites}
+                    onAddToFirstPlayer={handleAddToFirstPlayer}
+                    onAddToSecondPlayer={handleAddToSecondPlayer}
+                />
+            </ModalButton>
+            <ModalButton
                 className="grid h-10 w-10 place-items-center rounded-full border border-neutral-700 bg-neutral-900 text-white"
                 contentClassName="max-w-4xl bg-neutral-900"
                 position="top"
                 buttonContent={<BsClockHistory size={18} />}
             >
                 <HistoryModal
-                    onAddToFirstPlayer={handleAddToFirstPlayer}
-                    onAddToSecondPlayer={handleAddToSecondPlayer}
-                />
-            </ModalButton>
-            <ModalButton
-                className="grid h-10 w-10 place-items-center rounded-full border border-neutral-700 bg-white text-black"
-                contentClassName="max-w-5xl bg-neutral-900"
-                position="top"
-                buttonContent={<BsSearch size={18} />}
-            >
-                <SearchModal
-                    videos={videos}
-                    onSubmit={handleSubmit}
-                    onFavorite={toFavorites}
                     onAddToFirstPlayer={handleAddToFirstPlayer}
                     onAddToSecondPlayer={handleAddToSecondPlayer}
                 />
