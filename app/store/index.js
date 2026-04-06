@@ -2,20 +2,20 @@ import { useEffect } from "react";
 import { create } from "zustand";
 
 export async function fetchVideos(searchText = "") {
-    const url = 'https://www.googleapis.com/youtube/v3/search'
+    const query = String(searchText || "").trim()
+
+    if (!query) {
+        return []
+    }
 
     const params = new URLSearchParams()
-    params.append('key', process.env.NEXT_PUBLIC_YOUTUBE_API_KEY)
-    params.append('type', 'video')
-    params.append('part', 'snippet')
-    params.append('maxResults', 12)
-    params.append('q', searchText)
+    params.append('q', query)
 
-    const request = await fetch(`${url}?${params.toString()}`)
+    const request = await fetch(`/api/search?${params.toString()}`)
     const data = await request.json()
 
     if (request.ok) {
-        return data.items
+        return data.items || []
     }
 
     return []
