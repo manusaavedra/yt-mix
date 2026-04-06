@@ -3,6 +3,7 @@
 import { useStoreVideos } from "../app/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { crossfader } from "@/helpers";
+import { createOutputState, publishOutputState } from "@/helpers/output";
 import YoutubePlayer from "./YoutubePlayer";
 
 const formatTime = (value) => {
@@ -34,6 +35,7 @@ export default function Controls() {
     const [secondSeek, setSecondSeek] = useState({ current: 0, duration: 0, seeking: false })
     const [firstIsPlaying, setFirstIsPlaying] = useState(false)
     const [secondIsPlaying, setSecondIsPlaying] = useState(false)
+    const [crossfadeValue, setCrossfadeValue] = useState(-1)
 
     const runPlayerCommand = useCallback((playerRef, command) => {
         const player = playerRef.current
@@ -48,6 +50,32 @@ export default function Controls() {
             console.warn("Player command skipped", error)
         }
     }, [])
+
+    const buildDeckSnapshot = useCallback((playerData, playerRef, isPlaying) => {
+        const player = playerRef.current
+
+        return {
+            id: playerData?.id || "",
+            title: playerData?.title || "",
+            currentTime: player?.getCurrentTime?.() || 0,
+            duration: player?.getDuration?.() || 0,
+            isPlaying: Boolean(playerData?.id) && isPlaying
+        }
+    }, [])
+
+    const syncOutputWindow = useCallback(() => {
+        publishOutputState(createOutputState({
+            crossfade: crossfadeValue,
+            firstDeck: buildDeckSnapshot(firstPlayer, firstPlayerRef, firstIsPlaying),
+            secondDeck: buildDeckSnapshot(secondPlayer, secondPlayerRef, secondIsPlaying),
+            updatedAt: Date.now()
+        }))
+    }, [buildDeckSnapshot, crossfadeValue, firstIsPlaying, firstPlayer, secondIsPlaying, secondPlayer])
+
+    const openOutputWindow = useCallback(() => {
+        syncOutputWindow()
+        window.open("/output", "yt-mix-output", "popup=yes,width=1280,height=720")
+    }, [syncOutputWindow])
 
     const syncSeekState = useCallback((playerRef, setSeekState) => {
         const player = playerRef.current
@@ -152,12 +180,17 @@ export default function Controls() {
             syncSeekState(secondPlayerRef, setSecondSeek)
             syncPlaybackState(firstPlayerRef, setFirstIsPlaying)
             syncPlaybackState(secondPlayerRef, setSecondIsPlaying)
+            syncOutputWindow()
         }, 500)
 
         return () => {
             window.clearInterval(interval)
         }
-    }, [syncPlaybackState, syncSeekState])
+    }, [syncOutputWindow, syncPlaybackState, syncSeekState])
+
+    useEffect(() => {
+        syncOutputWindow()
+    }, [syncOutputWindow])
 
     const onReadyFirstPlayer = useCallback((eventPlayer) => {
         firstPlayerRef.current = eventPlayer.target
@@ -219,6 +252,7 @@ export default function Controls() {
 
     const handleCrossFade = (e) => {
         const threshold = parseFloat(e.target.value)
+        setCrossfadeValue(threshold)
         const firstPlayerVolume = parseFloat(inputVolFirstPlayerRef.current.value)
         const secondPlayerVolume = parseFloat(inputVolSecondPlayerRef.current.value)
         const [volume1, volume2] = crossfader(threshold, firstPlayerVolume, secondPlayerVolume)
@@ -379,6 +413,14 @@ export default function Controls() {
 
             <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-neutral-800 bg-neutral-950/95 p-3 py-4 backdrop-blur sm:sticky sm:bottom-0 sm:mt-4 sm:border sm:border-neutral-800 sm:bg-black/40 sm:p-4">
                 <div className="mx-auto w-full max-w-5xl">
+                    <div className="mb-3 flex justify-end">
+                        <button
+                            className="hidden sm:block rounded-full border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm font-semibold text-neutral-200 transition hover:border-neutral-500 hover:bg-neutral-800"
+                            onClick={openOutputWindow}
+                        >
+                            Abrir salida externa (Beta)
+                        </button>
+                    </div>
                     <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
                         <span className="text-red-300">Deck 1</span>
                         <span>Crossfader</span>

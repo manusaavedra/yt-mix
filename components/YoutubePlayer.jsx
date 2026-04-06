@@ -43,15 +43,21 @@ export default function YoutubePlayer({
     videoId,
     title,
     onPlayerReady,
+    playerVars,
 }) {
     const containerRef = useRef(null)
     const playerRef = useRef(null)
     const onPlayerReadyRef = useRef(onPlayerReady)
     const initialVideoIdRef = useRef(videoId)
+    const playerVarsRef = useRef(playerVars)
 
     useEffect(() => {
         onPlayerReadyRef.current = onPlayerReady
     }, [onPlayerReady])
+
+    useEffect(() => {
+        playerVarsRef.current = playerVars
+    }, [playerVars])
 
     useEffect(() => {
         let isMounted = true
@@ -74,6 +80,7 @@ export default function YoutubePlayer({
                     playsinline: 1,
                     rel: 0,
                     enablejsapi: 1,
+                    ...playerVarsRef.current,
                 },
                 events: {
                     onReady: (event) => {
