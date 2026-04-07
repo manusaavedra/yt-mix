@@ -22,7 +22,7 @@ function SearchModal({ videos, onSubmit, onFavorite, onAddToFirstPlayer, onAddTo
                     className="h-11 w-full !rounded-full border border-neutral-700 bg-neutral-900 px-4 text-sm text-neutral-200 outline-none transition placeholder:text-neutral-400 focus:border-neutral-500 md:text-base"
                     type="search"
                     name="search"
-                    autoComplete
+                    autoComplete="true"
                     placeholder="Buscar en YouTube..."
                 />
             </form>
