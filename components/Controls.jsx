@@ -1,380 +1,284 @@
 "use client"
 
-import { useStoreVideos } from "../app/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { crossfader } from "@/helpers";
-import YoutubePlayer from "./YoutubePlayer";
+import { useStoreVideos } from "../app/store";
+import DeckPanel from "./DeckPanel";
 
-const formatTime = (value) => {
-    const totalSeconds = Math.max(0, Math.floor(value || 0))
-    const minutes = Math.floor(totalSeconds / 60)
-    const seconds = String(totalSeconds % 60).padStart(2, "0")
-
-    return `${minutes}:${seconds}`
-}
+const createSeekState = (current = 0, duration = 0) => ({
+    current,
+    duration,
+    seeking: false
+});
 
 const getPlayerStateValue = (player) => {
-    try {
-        return player?.getPlayerState?.()
-    } catch (error) {
-        return null
-    }
-}
+    return player?.getPlayerState?.();
+};
 
 export default function Controls() {
-    const { firstPlayer, secondPlayer } = useStoreVideos()
-    const inputVolFirstPlayerRef = useRef()
-    const inputVolSecondPlayerRef = useRef()
-    const inputTransitionRef = useRef()
+    const { firstPlayer, secondPlayer } = useStoreVideos();
+    const inputVolFirstPlayerRef = useRef();
+    const inputVolSecondPlayerRef = useRef();
+    const inputTransitionRef = useRef();
+    const firstPlayerRef = useRef(null);
+    const secondPlayerRef = useRef(null);
 
-    const firstPlayerRef = useRef(null)
-    const secondPlayerRef = useRef(null)
-
-    const [firstSeek, setFirstSeek] = useState({ current: 0, duration: 0, seeking: false })
-    const [secondSeek, setSecondSeek] = useState({ current: 0, duration: 0, seeking: false })
-    const [firstIsPlaying, setFirstIsPlaying] = useState(false)
-    const [secondIsPlaying, setSecondIsPlaying] = useState(false)
+    const [firstSeek, setFirstSeek] = useState(() => createSeekState());
+    const [secondSeek, setSecondSeek] = useState(() => createSeekState());
+    const [firstIsPlaying, setFirstIsPlaying] = useState(false);
+    const [secondIsPlaying, setSecondIsPlaying] = useState(false);
 
     const runPlayerCommand = useCallback((playerRef, command) => {
-        const player = playerRef.current
+        const player = playerRef.current;
 
-        if (!player) {
-            return
-        }
+        if (!player) return
 
         try {
-            command(player)
+            command(player);
         } catch (error) {
-            console.warn("Player command skipped", error)
+            console.warn("Player command skipped", error);
         }
-    }, [])
+    }, []);
+
+    const getVolumeValue = useCallback((volumeRef) => {
+        return parseFloat(volumeRef.current?.value || 75);
+    }, []);
+
+    const setPlayerVolume = useCallback((playerRef, value) => {
+        runPlayerCommand(playerRef, (player) => player.setVolume(value));
+    }, [runPlayerCommand]);
+
+    const setPlayerSeeking = useCallback((setSeekState, seeking) => {
+        setSeekState((previousState) => ({
+            ...previousState,
+            seeking
+        }));
+    }, []);
 
     const syncSeekState = useCallback((playerRef, setSeekState) => {
-        const player = playerRef.current
+        const player = playerRef.current;
 
-        if (!player) {
-            return
-        }
+        if (!player) return
 
         try {
-            setSeekState((prev) => {
-                if (prev.seeking) {
-                    return prev
-                }
+            setSeekState((previousState) => {
+                if (previousState.seeking) previousState;
 
                 return {
-                    ...prev,
+                    ...previousState,
                     current: player.getCurrentTime?.() || 0,
                     duration: player.getDuration?.() || 0
-                }
-            })
+                };
+            });
         } catch (error) {
-            console.warn("Seek sync skipped", error)
+            console.warn("Seek sync skipped", error);
         }
-    }, [])
+    }, []);
 
     const syncPlaybackState = useCallback((playerRef, setIsPlaying) => {
-        const player = playerRef.current
+        const player = playerRef.current;
 
-        if (!player) {
-            return
-        }
+        if (!player) return
 
-        const state = getPlayerStateValue(player)
-        setIsPlaying(state === window.YT?.PlayerState?.PLAYING)
-    }, [])
-
-    const setSeeking = useCallback((setSeekState, seeking) => {
-        setSeekState((prev) => ({ ...prev, seeking }))
-    }, [])
+        const state = getPlayerStateValue(player);
+        setIsPlaying(state === window.YT?.PlayerState?.PLAYING);
+    }, []);
 
     const handleSeek = useCallback((playerRef, setSeekState, value) => {
-        const nextValue = parseFloat(value)
+        const nextValue = parseFloat(value);
 
-        setSeekState((prev) => ({
-            ...prev,
+        setSeekState((previousState) => ({
+            ...previousState,
             current: nextValue
-        }))
+        }));
 
-        runPlayerCommand(playerRef, (player) => player.seekTo(nextValue, true))
-    }, [runPlayerCommand])
+        runPlayerCommand(playerRef, (player) => player.seekTo(nextValue, true));
+    }, [runPlayerCommand]);
+
+    const setDeckPlaybackState = useCallback((playerRef, setIsPlaying, shouldPlay) => {
+        runPlayerCommand(playerRef, (player) => {
+            if (shouldPlay) {
+                player.playVideo();
+                player.unMute();
+                return;
+            }
+
+            player.pauseVideo();
+            player.mute();
+        });
+
+        setIsPlaying(shouldPlay);
+    }, [runPlayerCommand]);
 
     const togglePlayback = useCallback((playerRef, isPlaying, setIsPlaying) => {
         runPlayerCommand(playerRef, (player) => {
             if (isPlaying) {
-                player.pauseVideo()
-                setIsPlaying(false)
-                return
+                player.pauseVideo();
+                setIsPlaying(false);
+                return;
             }
 
-            player.playVideo()
-            setIsPlaying(true)
-        })
-    }, [runPlayerCommand])
+            player.playVideo();
+            setIsPlaying(true);
+        });
+    }, [runPlayerCommand]);
+
+    const adjustVolume = useCallback((volumeRef, playerRef, delta) => {
+        if (!volumeRef.current) return
+
+        const currentValue = parseInt(volumeRef.current.value || "0", 10);
+        const nextValue = Math.max(0, Math.min(100, currentValue + delta));
+        volumeRef.current.value = nextValue;
+        setPlayerVolume(playerRef, nextValue);
+    }, [setPlayerVolume]);
+
+    const syncReadyState = useCallback((eventPlayer, options) => {
+        const {
+            playerRef,
+            setSeekState,
+            setIsPlaying,
+            volumeRef,
+            shouldPlay
+        } = options;
+
+        playerRef.current = eventPlayer.target;
+        setSeekState(createSeekState(
+            eventPlayer.target?.getCurrentTime?.() || 0,
+            eventPlayer.target?.getDuration?.() || 0
+        ));
+
+        setDeckPlaybackState(playerRef, setIsPlaying, shouldPlay);
+        setPlayerVolume(playerRef, getVolumeValue(volumeRef));
+    }, [getVolumeValue, setDeckPlaybackState, setPlayerVolume]);
 
     useEffect(() => {
         const handleKeyboard = (event) => {
-            const keypress = event.code
+            if (!event.shiftKey) return
 
-            if (event.shiftKey && keypress === "KeyW") {
-                inputVolSecondPlayerRef.current.value = parseInt(inputVolSecondPlayerRef.current.value) + 1
-                runPlayerCommand(secondPlayerRef, (player) => player.setVolume(inputVolSecondPlayerRef.current.value))
+            if (event.code === "KeyW") {
+                adjustVolume(inputVolSecondPlayerRef, secondPlayerRef, 1);
             }
 
-            if (event.shiftKey && keypress === "KeyS") {
-                inputVolSecondPlayerRef.current.value = parseInt(inputVolSecondPlayerRef.current.value) - 1
-                runPlayerCommand(secondPlayerRef, (player) => player.setVolume(inputVolSecondPlayerRef.current.value))
+            if (event.code === "KeyS") {
+                adjustVolume(inputVolSecondPlayerRef, secondPlayerRef, -1);
             }
 
-            if (event.shiftKey && keypress === "KeyQ") {
-                inputVolFirstPlayerRef.current.value = parseInt(inputVolFirstPlayerRef.current.value) + 1
-                runPlayerCommand(firstPlayerRef, (player) => player.setVolume(inputVolFirstPlayerRef.current.value))
+            if (event.code === "KeyQ") {
+                adjustVolume(inputVolFirstPlayerRef, firstPlayerRef, 1);
             }
 
-            if (event.shiftKey && keypress === "KeyA") {
-                inputVolFirstPlayerRef.current.value = parseInt(inputVolFirstPlayerRef.current.value) - 1
-                runPlayerCommand(firstPlayerRef, (player) => player.setVolume(inputVolFirstPlayerRef.current.value))
+            if (event.code === "KeyA") {
+                adjustVolume(inputVolFirstPlayerRef, firstPlayerRef, -1);
             }
-        }
+        };
 
-        window.addEventListener("keydown", handleKeyboard)
+        window.addEventListener("keydown", handleKeyboard);
 
         return () => {
-            firstPlayerRef.current = null
-            secondPlayerRef.current = null
-            window.removeEventListener("keydown", handleKeyboard)
-        }
-    }, [runPlayerCommand])
+            firstPlayerRef.current = null;
+            secondPlayerRef.current = null;
+            window.removeEventListener("keydown", handleKeyboard);
+        };
+    }, [adjustVolume]);
 
     useEffect(() => {
         const interval = window.setInterval(() => {
-            syncSeekState(firstPlayerRef, setFirstSeek)
-            syncSeekState(secondPlayerRef, setSecondSeek)
-            syncPlaybackState(firstPlayerRef, setFirstIsPlaying)
-            syncPlaybackState(secondPlayerRef, setSecondIsPlaying)
-        }, 500)
+            syncSeekState(firstPlayerRef, setFirstSeek);
+            syncSeekState(secondPlayerRef, setSecondSeek);
+            syncPlaybackState(firstPlayerRef, setFirstIsPlaying);
+            syncPlaybackState(secondPlayerRef, setSecondIsPlaying);
+        }, 500);
 
         return () => {
-            window.clearInterval(interval)
-        }
-    }, [syncPlaybackState, syncSeekState])
+            window.clearInterval(interval);
+        };
+    }, [syncPlaybackState, syncSeekState]);
 
     const onReadyFirstPlayer = useCallback((eventPlayer) => {
-        firstPlayerRef.current = eventPlayer.target
-        setFirstSeek({
-            current: eventPlayer.target?.getCurrentTime?.() || 0,
-            duration: eventPlayer.target?.getDuration?.() || 0,
-            seeking: false
-        })
-        setFirstIsPlaying(false)
+        const threshold = parseFloat(inputTransitionRef.current?.value || -1);
 
-        if (inputTransitionRef.current?.value >= 0.85) {
-            runPlayerCommand(firstPlayerRef, (player) => {
-                player.mute()
-                player.pauseVideo()
-            })
-        } else {
-            runPlayerCommand(firstPlayerRef, (player) => {
-                player.unMute()
-                player.playVideo()
-            })
-            setFirstIsPlaying(true)
-        }
-
-        runPlayerCommand(firstPlayerRef, (player) => player.setVolume(inputVolFirstPlayerRef.current?.value))
-    }, [runPlayerCommand])
+        syncReadyState(eventPlayer, {
+            playerRef: firstPlayerRef,
+            setSeekState: setFirstSeek,
+            setIsPlaying: setFirstIsPlaying,
+            volumeRef: inputVolFirstPlayerRef,
+            shouldPlay: threshold < 0.85
+        });
+    }, [syncReadyState]);
 
     const onReadySecondPlayer = useCallback((eventPlayer) => {
-        secondPlayerRef.current = eventPlayer.target
-        setSecondSeek({
-            current: eventPlayer.target?.getCurrentTime?.() || 0,
-            duration: eventPlayer.target?.getDuration?.() || 0,
-            seeking: false
-        })
-        setSecondIsPlaying(false)
+        const threshold = parseFloat(inputTransitionRef.current?.value || -1);
 
-        if (inputTransitionRef.current?.value <= -0.85) {
-            runPlayerCommand(secondPlayerRef, (player) => {
-                player.mute()
-                player.pauseVideo()
-            })
-        } else {
-            runPlayerCommand(secondPlayerRef, (player) => {
-                player.unMute()
-                player.playVideo()
-            })
-            setSecondIsPlaying(true)
+        syncReadyState(eventPlayer, {
+            playerRef: secondPlayerRef,
+            setSeekState: setSecondSeek,
+            setIsPlaying: setSecondIsPlaying,
+            volumeRef: inputVolSecondPlayerRef,
+            shouldPlay: threshold > -0.85
+        });
+    }, [syncReadyState]);
+
+    const handleChangeVolumeFirstPlayer = useCallback((event) => {
+        setPlayerVolume(firstPlayerRef, event.target.value);
+    }, [setPlayerVolume]);
+
+    const handleChangeVolumeSecondPlayer = useCallback((event) => {
+        setPlayerVolume(secondPlayerRef, event.target.value);
+    }, [setPlayerVolume]);
+
+    const handleCrossFade = useCallback((event) => {
+        const threshold = parseFloat(event.target.value);
+        const firstPlayerVolume = getVolumeValue(inputVolFirstPlayerRef);
+        const secondPlayerVolume = getVolumeValue(inputVolSecondPlayerRef);
+        const [volume1, volume2] = crossfader(threshold, firstPlayerVolume, secondPlayerVolume);
+
+        setDeckPlaybackState(firstPlayerRef, setFirstIsPlaying, threshold < 0.9);
+        setDeckPlaybackState(secondPlayerRef, setSecondIsPlaying, threshold > -0.9);
+        setPlayerVolume(firstPlayerRef, volume1);
+        setPlayerVolume(secondPlayerRef, volume2);
+    }, [getVolumeValue, setDeckPlaybackState, setPlayerVolume]);
+
+    const deckPanels = [
+        {
+            deckNumber: 1,
+            color: "red",
+            playerData: firstPlayer,
+            seekState: firstSeek,
+            isPlaying: firstIsPlaying,
+            onTogglePlayback: () => togglePlayback(firstPlayerRef, firstIsPlaying, setFirstIsPlaying),
+            onSeek: (value) => handleSeek(firstPlayerRef, setFirstSeek, value),
+            onSetSeeking: (seeking) => setPlayerSeeking(setFirstSeek, seeking),
+            onPlayerReady: onReadyFirstPlayer,
+            volumeRef: inputVolFirstPlayerRef,
+            onVolumeChange: handleChangeVolumeFirstPlayer,
+            playerId: "firstPlayer",
+            volumeTitle: "(Shift+Q [>] Shift+A [<])"
+        },
+        {
+            deckNumber: 2,
+            color: "blue",
+            playerData: secondPlayer,
+            seekState: secondSeek,
+            isPlaying: secondIsPlaying,
+            onTogglePlayback: () => togglePlayback(secondPlayerRef, secondIsPlaying, setSecondIsPlaying),
+            onSeek: (value) => handleSeek(secondPlayerRef, setSecondSeek, value),
+            onSetSeeking: (seeking) => setPlayerSeeking(setSecondSeek, seeking),
+            onPlayerReady: onReadySecondPlayer,
+            volumeRef: inputVolSecondPlayerRef,
+            onVolumeChange: handleChangeVolumeSecondPlayer,
+            playerId: "secondPlayer",
+            volumeTitle: "(Shift+W [>] Shift+S [<])"
         }
-
-        runPlayerCommand(secondPlayerRef, (player) => player.setVolume(inputVolSecondPlayerRef.current?.value))
-    }, [runPlayerCommand])
-
-    const handleChangeVolumeFirstPlayer = (e) => {
-        runPlayerCommand(firstPlayerRef, (player) => player.setVolume(e.target.value))
-    }
-
-    const handleChangeVolumeSecondPlayer = (e) => {
-        runPlayerCommand(secondPlayerRef, (player) => player.setVolume(e.target.value))
-    }
-
-    const handleCrossFade = (e) => {
-        const threshold = parseFloat(e.target.value)
-        const firstPlayerVolume = parseFloat(inputVolFirstPlayerRef.current.value)
-        const secondPlayerVolume = parseFloat(inputVolSecondPlayerRef.current.value)
-        const [volume1, volume2] = crossfader(threshold, firstPlayerVolume, secondPlayerVolume)
-
-        if (threshold < 0.9) {
-            runPlayerCommand(firstPlayerRef, (player) => {
-                player.playVideo()
-                player.unMute()
-            })
-            setFirstIsPlaying(true)
-        } else {
-            runPlayerCommand(firstPlayerRef, (player) => {
-                player.pauseVideo()
-                player.mute()
-            })
-            setFirstIsPlaying(false)
-        }
-
-        if (threshold > -0.9) {
-            runPlayerCommand(secondPlayerRef, (player) => {
-                player.playVideo()
-                player.unMute()
-            })
-            setSecondIsPlaying(true)
-        } else {
-            runPlayerCommand(secondPlayerRef, (player) => {
-                player.pauseVideo()
-                player.mute()
-            })
-            setSecondIsPlaying(false)
-        }
-
-        runPlayerCommand(firstPlayerRef, (player) => player.setVolume(volume1))
-        runPlayerCommand(secondPlayerRef, (player) => player.setVolume(volume2))
-    }
-
-    const renderDeck = ({
-        deckNumber,
-        color,
-        playerData,
-        seekState,
-        setSeekState,
-        playerRef,
-        isPlaying,
-        setIsPlaying,
-        onReady,
-        volumeRef,
-        onVolumeChange,
-        playerId
-    }) => (
-        <div className="flex flex-col gap-3">
-            <div className={`relative min-h-[180px] overflow-hidden rounded-2xl border bg-black/30 shadow-lg sm:min-h-[260px] ${color === "red" ? "border-red-500/60" : "border-blue-500/60"}`}>
-                <div className={`absolute left-0 top-0 z-10 w-12 rounded-br-2xl py-1 text-center text-sm font-black text-white ${color === "red" ? "bg-red-500" : "bg-blue-500"}`}>
-                    {deckNumber}
-                </div>
-
-                <div className="relative z-10 flex min-h-[180px] items-center justify-center p-5 text-center sm:hidden">
-                    <div className="w-full">
-                        <p className={`mb-2 text-xs font-semibold uppercase tracking-[0.2em] ${color === "red" ? "text-red-300" : "text-blue-300"}`}>
-                            Deck {deckNumber}
-                        </p>
-                        <h3 className="mb-4 text-base font-bold leading-5 text-white">
-                            {playerData?.title || `Carga un video en el deck ${deckNumber}`}
-                        </h3>
-                        <button
-                            className={`mb-4 w-full rounded-xl border px-3 py-2 text-sm font-semibold ${color === "red" ? "border-red-500 bg-red-500/15 text-red-200" : "border-blue-500 bg-blue-500/15 text-blue-200"} ${!playerData ? "opacity-50" : ""}`}
-                            onClick={() => togglePlayback(playerRef, isPlaying, setIsPlaying)}
-                            disabled={!playerData}
-                        >
-                            {isPlaying ? "Pausar" : "Reproducir"}
-                        </button>
-                        <input
-                            type="range"
-                            min={0}
-                            max={seekState.duration || 0}
-                            step={1}
-                            value={Math.min(seekState.current, seekState.duration || 0)}
-                            onChange={(e) => handleSeek(playerRef, setSeekState, e.target.value)}
-                            onMouseDown={() => setSeeking(setSeekState, true)}
-                            onMouseUp={() => setSeeking(setSeekState, false)}
-                            onTouchStart={() => setSeeking(setSeekState, true)}
-                            onTouchEnd={() => setSeeking(setSeekState, false)}
-                            onKeyDown={() => setSeeking(setSeekState, true)}
-                            onKeyUp={() => setSeeking(setSeekState, false)}
-                            disabled={!playerData}
-                        />
-                        <div className="mt-2 flex justify-between text-xs text-neutral-400">
-                            <span>{formatTime(seekState.current)}</span>
-                            <span>{formatTime(seekState.duration)}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {
-                    playerData !== null && (
-                        <YoutubePlayer
-                            id={playerId}
-                            videoId={playerData?.id || ""}
-                            title={playerData?.title}
-                            onPlayerReady={onReady}
-                            className="absolute inset-0 h-0 sm:h-full opacity-0 pointer-events-none sm:opacity-100 sm:pointer-events-auto"
-                        />
-                    )
-                }
-            </div>
-
-            <div className="rounded-2xl border border-neutral-800 bg-white/[0.04] p-3 shadow-lg">
-                <label className={`mb-2 block text-sm font-semibold ${color === "red" ? "text-red-300" : "text-blue-300"}`}>
-                    Volumen deck {deckNumber}
-                </label>
-                <input
-                    ref={volumeRef}
-                    title={deckNumber === 1 ? "(Shift+Q [>] Shift+A [<])" : "(Shift+W [>] Shift+S [<])"}
-                    type="range"
-                    className={color === "red" ? "red" : "blue"}
-                    onInput={onVolumeChange}
-                    defaultValue={75}
-                    min={0}
-                    max={100}
-                />
-            </div>
-        </div>
-    )
+    ];
 
     return (
         <section className="mx-auto flex min-h-[calc(100dvh-72px)] w-full max-w-5xl flex-col px-3 pb-28 pt-4 sm:px-4 sm:pb-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {renderDeck({
-                    deckNumber: 1,
-                    color: "red",
-                    playerData: firstPlayer,
-                    seekState: firstSeek,
-                    setSeekState: setFirstSeek,
-                    playerRef: firstPlayerRef,
-                    isPlaying: firstIsPlaying,
-                    setIsPlaying: setFirstIsPlaying,
-                    onReady: onReadyFirstPlayer,
-                    volumeRef: inputVolFirstPlayerRef,
-                    onVolumeChange: handleChangeVolumeFirstPlayer,
-                    playerId: "firstPlayer"
-                })}
-
-                {renderDeck({
-                    deckNumber: 2,
-                    color: "blue",
-                    playerData: secondPlayer,
-                    seekState: secondSeek,
-                    setSeekState: setSecondSeek,
-                    playerRef: secondPlayerRef,
-                    isPlaying: secondIsPlaying,
-                    setIsPlaying: setSecondIsPlaying,
-                    onReady: onReadySecondPlayer,
-                    volumeRef: inputVolSecondPlayerRef,
-                    onVolumeChange: handleChangeVolumeSecondPlayer,
-                    playerId: "secondPlayer"
-                })}
+                {
+                    deckPanels.map((deck) => (
+                        <DeckPanel key={deck.playerId} {...deck} />
+                    ))
+                }
             </div>
 
             <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-neutral-800 bg-neutral-950/95 p-3 py-4 backdrop-blur sm:sticky sm:bottom-0 sm:mt-4 sm:border sm:border-neutral-800 sm:bg-black/40 sm:p-4">
@@ -396,5 +300,5 @@ export default function Controls() {
                 </div>
             </div>
         </section>
-    )
+    );
 }

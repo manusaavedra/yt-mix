@@ -32,6 +32,14 @@ export function timeago(date) {
     return `Hace un momento`;
 }
 
+export const formatTime = (value) => {
+    const totalSeconds = Math.max(0, Math.floor(value || 0));
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = String(totalSeconds % 60).padStart(2, "0");
+
+    return `${minutes}:${seconds}`;
+};
+
 export const crossfader = (threshold, value1, value2) => {
     if (threshold < -1 || threshold > 1) {
         return null;

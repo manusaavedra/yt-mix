@@ -24,8 +24,8 @@ export default function ModalButton({ children, buttonContent, className, conten
             </button>
             <div className={`fixed ${open ? 'flex' : 'hidden'} z-50 ${PosY[position]} justify-center top-0 left-0 w-full h-screen`}>
                 <div onClick={handleClose} className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-30"></div>
-                <div className={`${contentClassName} relative max-w-2xl w-[98%] mx-auto overflow-auto p-4 rounded-sm bg-neutral-800`}>
-                    {children}
+                <div className={`${contentClassName} relative max-w-2xl w-[98%] mx-auto overflow-auto p-4 rounded-lg bg-neutral-800`}>
+                    {typeof children === 'function' ? children({ close: handleClose }) : children}
                 </div>
             </div>
         </div>

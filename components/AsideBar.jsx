@@ -31,7 +31,7 @@ export default function AsideBar({ onAddToFirstPlayer, onAddToSecondPlayer }) {
                         const isActive = section === tab
 
                         return (
-                            <div className={`${isActive ? 'border-b-2 border-gray-300 text-gray-300' : 'text-neutral-500'} flex shrink-0 cursor-default items-center gap-2 px-2 font-semibold`} key={tab} onClick={() => handleSection(tab)}>
+                            <div className={`${isActive ? 'bg-red-500 text-white font-semibold border-red-500' : 'text-neutral-500'} rounded-lg border border-gray-600/50 py-1 flex shrink-0 cursor-default items-center gap-2 px-2`} key={tab} onClick={() => handleSection(tab)}>
                                 {COMPONENTS[tab].icon}
                                 {COMPONENTS[tab].title}
                             </div>

@@ -44,8 +44,9 @@ export function useVideos() {
     }
 
     const searchVideos = async (value) => {
+        useStoreVideos.setState({ isSearching: true })
         const data = await fetchVideos(value)
-        useStoreVideos.setState({ videos: data })
+        useStoreVideos.setState({ videos: data, isSearching: false })
     }
 
     return {
@@ -53,7 +54,8 @@ export function useVideos() {
         fetchVideos,
         toFirstPlayer,
         toSecondPlayer,
-        searchVideos
+        searchVideos,
+        isSearching: useStoreVideos((state) => state.isSearching)
     }
 }
 
@@ -140,5 +142,6 @@ export const useStoreVideos = create(() => ({
     favorites: [],
     history: [],
     firstPlayer: null,
-    secondPlayer: null
+    secondPlayer: null,
+    isSearching: false
 }))
