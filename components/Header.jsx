@@ -4,7 +4,7 @@ import Info from "./Info";
 
 export default function Header({ actions }) {
     return (
-        <header className="sticky top-0 left-0 z-40 grid grid-cols-[auto_1fr_auto] items-center gap-3 bg-black p-4">
+        <header className="sticky top-0 left-0 z-40 grid grid-cols-[40px_1fr_40px] items-center gap-3 bg-black p-4">
             <picture className="w-[110px] shrink-0 md:w-[140px]">
                 <img src="/logo.svg" alt="yt-mix logo" />
             </picture>

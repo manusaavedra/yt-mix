@@ -58,3 +58,22 @@ export const crossfader = (threshold, value1, value2) => {
 
     return [parseFloat(interpolatedValue1), parseFloat(interpolatedValue2)];
 }
+
+export function rampTo(value, nextValue, ms, onUpdate) {
+    const start = performance.now()
+    const diff = nextValue - value
+
+    function step(now) {
+        const elapsed = now - start
+        const progress = Math.min(elapsed / ms, 1)
+
+        const currentValue = value + diff * progress
+        onUpdate?.(currentValue)
+
+        if (progress < 1) {
+            requestAnimationFrame(step)
+        }
+    }
+
+    requestAnimationFrame(step)
+}

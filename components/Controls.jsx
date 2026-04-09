@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { crossfader } from "@/helpers";
+import { crossfader, rampTo } from "@/helpers";
 import { useStoreVideos } from "../app/store";
 import DeckPanel from "./DeckPanel";
 
@@ -151,24 +151,44 @@ export default function Controls() {
         setPlayerVolume(playerRef, getVolumeValue(volumeRef));
     }, [getVolumeValue, setDeckPlaybackState, setPlayerVolume]);
 
+    const handleCrossFadeAnimation = useCallback((deck) => {
+        if (!inputTransitionRef.current) return
+
+        const nextValue = deck === 1 ? -1 : 1;
+        const currentValue = parseFloat(inputTransitionRef.current.value);
+        inputTransitionRef.current.value = rampTo(currentValue, nextValue, 2000, (value) => {
+            inputTransitionRef.current.value = value;
+            inputTransitionRef.current.dispatchEvent(new Event("input", { bubbles: true }))
+        });
+    }, []);
+
     useEffect(() => {
         const handleKeyboard = (event) => {
-            if (!event.shiftKey) return
+            if (event.shiftKey) {
+                if (event.code === "KeyW") {
+                    adjustVolume(inputVolSecondPlayerRef, secondPlayerRef, 1);
+                }
 
-            if (event.code === "KeyW") {
-                adjustVolume(inputVolSecondPlayerRef, secondPlayerRef, 1);
+                if (event.code === "KeyS") {
+                    adjustVolume(inputVolSecondPlayerRef, secondPlayerRef, -1);
+                }
+
+                if (event.code === "KeyQ") {
+                    adjustVolume(inputVolFirstPlayerRef, firstPlayerRef, 1);
+                }
+
+                if (event.code === "KeyA") {
+                    adjustVolume(inputVolFirstPlayerRef, firstPlayerRef, -1);
+                }
             }
 
-            if (event.code === "KeyS") {
-                adjustVolume(inputVolSecondPlayerRef, secondPlayerRef, -1);
+
+            if (event.key === "ArrowLeft") {
+                handleCrossFadeAnimation(1);
             }
 
-            if (event.code === "KeyQ") {
-                adjustVolume(inputVolFirstPlayerRef, firstPlayerRef, 1);
-            }
-
-            if (event.code === "KeyA") {
-                adjustVolume(inputVolFirstPlayerRef, firstPlayerRef, -1);
+            if (event.key === "ArrowRight") {
+                handleCrossFadeAnimation(2);
             }
         };
 
@@ -179,7 +199,7 @@ export default function Controls() {
             secondPlayerRef.current = null;
             window.removeEventListener("keydown", handleKeyboard);
         };
-    }, [adjustVolume]);
+    }, [adjustVolume, handleCrossFadeAnimation]);
 
     useEffect(() => {
         const interval = window.setInterval(() => {
@@ -284,9 +304,9 @@ export default function Controls() {
             <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-neutral-800 bg-neutral-950/95 p-3 pb-8 backdrop-blur sm:sticky sm:bottom-0 sm:mt-4 sm:border sm:border-neutral-800 sm:bg-black/40 sm:p-4">
                 <div className="mx-auto w-full max-w-5xl">
                     <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
-                        <span className="text-red-300">Deck 1</span>
+                        <button className="text-red-300 border border-gray-500/60 p-2 rounded-md" onClick={() => handleCrossFadeAnimation(1)}>Deck 1</button>
                         <span>Crossfader</span>
-                        <span className="text-blue-300">Deck 2</span>
+                        <button className="text-blue-300 border border-gray-500/60 p-2 rounded-md" onClick={() => handleCrossFadeAnimation(2)}>Deck 2</button>
                     </div>
                     <input
                         ref={inputTransitionRef}
