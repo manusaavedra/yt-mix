@@ -301,7 +301,7 @@ export default function Controls() {
                 }
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-neutral-800 bg-neutral-950/95 p-3 pb-8 backdrop-blur sm:sticky sm:bottom-0 sm:mt-4 sm:border sm:border-neutral-800 sm:bg-black/40 sm:p-4">
+            <div className="fixed bottom-0 left-0 right-0 rounded-t-lg z-20 border-t border-neutral-800 bg-neutral-950/95 p-3 pb-8 backdrop-blur sm:sticky sm:bottom-0 sm:mt-4 sm:border sm:border-neutral-800 sm:bg-black/40 sm:p-4">
                 <div className="mx-auto w-full max-w-5xl">
                     <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400">
                         <button className="text-red-300 border border-gray-500/60 p-2 rounded-md" onClick={() => handleCrossFadeAnimation(1)}>Deck 1</button>
