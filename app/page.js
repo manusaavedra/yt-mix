@@ -56,7 +56,7 @@ function HistoryModal({ onAddToFirstPlayer, onAddToSecondPlayer }) {
     )
 }
 
-export default function Home() {
+function HeaderComponents() {
     const { videos, toFirstPlayer, toSecondPlayer, searchVideos, isSearching } = useVideos()
     const { toFavorites } = useFavorites()
 
@@ -77,7 +77,7 @@ export default function Home() {
         searchVideos(search)
     }
 
-    const actions = (
+    return (
         <ToastProvider>
             {({ showAddedToast, showSimpleMessage }) => {
                 const handleAddToFirstPlayer = (video) => {
@@ -138,10 +138,12 @@ export default function Home() {
             }}
         </ToastProvider>
     )
+}
 
+export default function Home() {
     return (
         <div className="grid min-h-dvh grid-rows-[auto_1fr] bg-neutral-950">
-            <Header actions={actions} />
+            <Header actions={<HeaderComponents />} />
             <main className="overflow-x-hidden">
                 <Controls />
             </main>

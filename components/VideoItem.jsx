@@ -18,7 +18,7 @@ export default function VideoItem({ videoId, title, imageUrl, onFavorite, onAddT
             <div className="absolute left-2 top-2 block">
                 <a
                     className="flex bg-neutral-800 text-white p-2 font-semibold rounded-md"
-                    href={`https://www.youtubeggg.com/watch?v=${videoId}`}
+                    href={`https://www.youtubepi.com/watch?v=${videoId}`}
                     target="_blank"
                     rel="noreferrer"
                 >
